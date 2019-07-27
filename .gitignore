@@ -1,0 +1,7 @@
+# IGNORED GIT FILES
+
+# IntelliJ project files
+.idea
+*.iml
+
+target/
