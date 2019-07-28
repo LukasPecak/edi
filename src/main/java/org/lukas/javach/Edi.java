@@ -6,31 +6,38 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
 
 /**
  * Created by Lukas on 27.07.2019.
  *
  * @author Lukas Pecak
  */
-public class Edi {
+class Edi {
 
-    private static Logger LOG = LoggerFactory.getLogger(Edi.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Edi.class);
 
-    public List<String> loadFile(String fileName) {
-        LOG.debug("Loading file for name : {}", fileName);
-        if (fileName == null || fileName.isEmpty()) {
-            throw new IllegalArgumentException();
+    byte[] loadBytes(String pathString) {
+        LOG.debug("Loading file for name : {}", pathString);
+        if (pathString == null || pathString.isEmpty()) {
+            throw new IllegalArgumentException("Path cannot be null or empty");
         }
-
-        List<String> lines;
+        byte[] bytes;
         try {
-            lines = Files.readAllLines(Paths.get(fileName));
+            bytes = Files.readAllBytes(Paths.get(pathString));
         } catch (IOException e) {
+            LOG.error("Error while trying to read file");
             return null;
         }
-        LOG.debug("File {} loaded successfully", fileName);
+        LOG.debug("File {} loaded successfully", pathString);
 
-        return lines;
+        return bytes;
+    }
+
+    void saveBytes(byte[] bytes, String pathString) {
+        try {
+            Files.write(Paths.get(pathString), bytes);
+        } catch (IOException e) {
+            LOG.error("Error while trying to save file");
+        }
     }
 }
