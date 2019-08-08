@@ -103,4 +103,109 @@ public class DocumentTest {
         // THEN
         assertThat(separator, is(equalTo(OLD_MAC_LINE_SEPARATOR)));
     }
+
+    @Test
+    public void getNumberOfLines_shouldReturnCountEqualToZeroInEmptyDocument_always() {
+        // GIVEN
+        String text = "";
+        document = new Document(text.getBytes());
+
+        // WHEN
+        int numberOfLines = document.getNumberOfLines();
+
+        // THEN
+        assertThat(numberOfLines, is(equalTo(0)));
+    }
+
+    @Test
+    public void getNumberOfLines_shouldReturnCountEqualToOneInNonEmptyDocumentWithOneLine_always() {
+        // GIVEN
+        String text = "One line";
+        document = new Document(text.getBytes());
+
+        // WHEN
+        int numberOfLines = document.getNumberOfLines();
+
+        // THEN
+        assertThat(numberOfLines, is(equalTo(1)));
+    }
+
+    @Test
+    public void getNumberOfLines_shouldReturnCountOfLinesInDocumentSeparatedWithWindowsEOL_always() {
+        // GIVEN
+        String text = "The first line\r\nThe second line\r\nThe third line";
+        document = new Document(text.getBytes());
+
+        // WHEN
+        int numberOfLines = document.getNumberOfLines();
+
+        // THEN
+        assertThat(numberOfLines, is(equalTo(3)));
+    }
+
+    @Test
+    public void getNumberOfLines_shouldReturnCountOfLinesInDocumentSeparatedWithUnixEOL_always() {
+        // GIVEN
+        String text = "The first line\nThe second line\nThe third line";
+        document = new Document(text.getBytes());
+
+        // WHEN
+        int numberOfLines = document.getNumberOfLines();
+
+        // THEN
+        assertThat(numberOfLines, is(equalTo(3)));
+    }
+
+    @Test
+    public void getNumberOfLines_shouldReturnCountOfLinesInDocumentSeparatedWithOldMacEOL_always() {
+        // GIVEN
+        String text = "The first line\rThe second line\rThe third line";
+        document = new Document(text.getBytes());
+
+        // WHEN
+        int numberOfLines = document.getNumberOfLines();
+
+        // THEN
+        assertThat(numberOfLines, is(equalTo(3)));
+    }
+
+    @Test
+    public void getNumberOfLines_shouldReturnCountOfLinesPlusOne_whenDocumentEndsWithWindowsLineSeparator() {
+        // GIVEN
+        String text = "The first line\r\nThe second line\r\nThe third line\r\n";
+        document = new Document(text.getBytes());
+
+        // WHEN
+        int numberOfLines = document.getNumberOfLines();
+
+        // THEN
+        assertThat(numberOfLines, is(equalTo(4)));
+    }
+
+    @Test
+    public void getNumberOfLines_shouldReturnCountOfLinesPlusOne_whenDocumentEndsWithUnixLineSeparator() {
+        // GIVEN
+        String text = "The first line\nThe second line\nThe third line\n";
+        document = new Document(text.getBytes());
+
+        // WHEN
+        int numberOfLines = document.getNumberOfLines();
+
+        // THEN
+        assertThat(numberOfLines, is(equalTo(4)));
+    }
+
+    @Test
+    public void getNumberOfLines_shouldReturnCountOfLinesPlusOne_whenDocumentEndsWithOldMacLineSeparator() {
+        // GIVEN
+        String text = "The first line\rThe second line\rThe third line\r";
+        document = new Document(text.getBytes());
+
+        // WHEN
+        int numberOfLines = document.getNumberOfLines();
+
+        // THEN
+        assertThat(numberOfLines, is(equalTo(4)));
+    }
+
 }
