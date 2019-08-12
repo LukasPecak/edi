@@ -48,6 +48,7 @@ public class EdiTest {
 
     @Test
     public void returnListWithFileLines_whenFileExists() {
+
         byte[] bytes = edi.loadBytes("src/test/resources/sampleFile.txt");
 
         assertThat(bytes, is(notNullValue()));
