@@ -135,22 +135,27 @@ class Document {
         if (bytes.length == 0) {
             return Collections.emptyList();
         }
-        int[] lineBreaks = getLineBrakeIndexes();
+        int[] lineBreakIndexes = getLineBrakeIndexes();
         List<byte[]> lines = new ArrayList<>();
-        int fromIndex = 0;
-        int toIndex;
-        for (int i = 0; i < lineBreaks.length; i = i + 2) {
-            toIndex = lineBreaks[i];
-            lines.add(Arrays.copyOfRange(bytes, fromIndex, toIndex));
-            fromIndex = lineBreaks[i + 1];
-        }
+
+        int lastLineStartIndex = addAllLinesButLast(lineBreakIndexes, lines);
         if (!lines.isEmpty()) {
-            lines.add(Arrays.copyOfRange(bytes, fromIndex, bytes.length));
+            lines.add(Arrays.copyOfRange(bytes, lastLineStartIndex, bytes.length));
         } else {
             lines.add(bytes);
         }
-
         return lines;
+    }
+
+    private int addAllLinesButLast(int[] lineBreakIndexes, List<byte[]> lines) {
+        int fromIndex = 0;
+        int toIndex;
+        for (int i = 0; i < lineBreakIndexes.length; i = i + 2) {
+            toIndex = lineBreakIndexes[i];
+            lines.add(Arrays.copyOfRange(bytes, fromIndex, toIndex));
+            fromIndex = lineBreakIndexes[i + 1];
+        }
+        return fromIndex;
     }
 
     private int[] getLineBrakeIndexes() {
