@@ -3,25 +3,26 @@ package org.lukas.javach.model;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.sound.sampled.Line;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.lukas.javach.model.Document.*;
+import static org.lukas.javach.model.LineBreak.*;
 
 /**
  * Created by Lukas on 28.07.2019.
  *
  * @author Lukas Pecak
  */
-public class DocumentTest {
+public class TextDocumentTest {
 
-    private Document document;
+    private TextDocument document;
 
     @Before
     public void setupTests() {
-        document = new Document(new byte[0]);
+        document = new TextDocument(new byte[0]);
     }
 
     @Test
@@ -32,236 +33,214 @@ public class DocumentTest {
     @Test
     public void document_shouldReturnTeSameArrayOfBytesAsInitializedWith_whenNoActionOnTheDataWerePerformed() {
         String data = "This is a sample text";
-        document = new Document(data.getBytes());
+        document = new TextDocument(data.getBytes());
 
         assertThat(document.getBytes(), is(equalTo(data.getBytes())));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void constructor_shouldThrowIllegalArgumentException_whenTryToInitializeWithNullValue() {
-        new Document(null);
+        new TextDocument(null);
     }
 
     @Test
-    public void getLineSeparator_shouldReturnTheLineSeparatorUsedInTheDocument_whenDocumentHasMultipleLines() {
+    public void getLineBreak_shouldReturnTheLineBreakUsedInTheDocument_whenDocumentHasMultipleLines() {
         // GIVEN
-        String windowsLineSeparator = "\r\n";
-        document = new Document(("This is the first line" + windowsLineSeparator + "This is the second line").getBytes());
+        String windowsLineBreak = "\r\n";
+        document = new TextDocument(("This is the first line" + windowsLineBreak + "This is the second line").getBytes());
 
         // WHEN
-        byte[] separator = document.getLineSeparator();
+        LineBreak lineBreak = document.getLineBreak();
 
         // THEN
-        assertThat(separator, is(equalTo(WINDOWS_LINE_SEPARATOR)));
+        assertThat(lineBreak, is(equalTo(LineBreak.WINDOWS_LINE_BREAK)));
     }
 
     @Test
-    public void getLineSeparator_shouldReturnTheSystemDefaultLineSeparator_whenDocumentIsEmpty() {
+    public void getLineBreak_shouldReturnTheSystemDefaultLineBreak_whenDocumentIsEmpty() {
         // GIVEN
+        byte[] systemBreak = System.lineSeparator().getBytes();
+
+        // WHEN
+        LineBreak lineBreak = document.getLineBreak();
+
+        // THEN
+        assertThat(lineBreak.getBytes(), is(equalTo(systemBreak)));
+    }
+
+    @Test
+    public void getLineLineBreak_shouldReturnTheSystemDefaultLineLineBreak_whenDocumentHasOnlyOneLine() {
+        // GIVEN
+        document = new TextDocument("One line test only. Without line lineBreak".getBytes());
         byte[] systemSeparator = System.lineSeparator().getBytes();
 
         // WHEN
-        byte[] separator = document.getLineSeparator();
+        LineBreak lineBreak = document.getLineBreak();
 
         // THEN
-        assertThat(separator, is(equalTo(systemSeparator)));
+        assertThat(lineBreak.getBytes(), is(equalTo(systemSeparator)));
     }
 
     @Test
-    public void getLineSeparator_shouldReturnTheSystemDefaultLineSeparator_whenDocumentHasOnlyOneLine() {
+    public void getLineLineBreak_shouldReturnTheUnixLineLineBreak_whenDocumentHasMultipleLinesAndUnixFormatting() {
         // GIVEN
-        document = new Document("One line test only. Without line separator".getBytes());
-        byte[] systemSeparator = System.lineSeparator().getBytes();
+        String unixLineBreak = "\n";
+        document = new TextDocument(("This is the first line" + unixLineBreak + "This is the second line").getBytes());
 
         // WHEN
-        byte[] separator = document.getLineSeparator();
+        LineBreak lineBreak = document.getLineBreak();
 
         // THEN
-        assertThat(separator, is(equalTo(systemSeparator)));
+        assertThat(lineBreak, is(equalTo(UNIX_LINE_BREAK)));
     }
 
     @Test
-    public void getLineSeparator_shouldReturnTheUnixLineSeparator_whenDocumentHasMultipleLinesAndUnixFormatting() {
+    public void getLineLineBreak_shouldReturnTheUnixLineLineBreak_whenDocumentEndsWithLineFeed() {
         // GIVEN
-        String unixLineSeparator = "\n";
-        document = new Document(("This is the first line" + unixLineSeparator + "This is the second line").getBytes());
+        String unixLineBreak = "\n";
+        document = new TextDocument(("This is the first line" + unixLineBreak).getBytes());
 
         // WHEN
-        byte[] separator = document.getLineSeparator();
+        LineBreak lineBreak = document.getLineBreak();
 
         // THEN
-        assertThat(separator, is(equalTo(UNIX_LINE_SEPARATOR)));
+        assertThat(lineBreak, is(equalTo(UNIX_LINE_BREAK)));
     }
 
     @Test
-    public void getLineSeparator_shouldReturnTheUnixLineSeparator_whenDocumentEndsWithLineFeed() {
+    public void getLineBreak_shouldReturnTheOldMacLineBreak_whenDocumentEndsWithCarriageReturn() {
         // GIVEN
-        String unixLineSeparator = "\n";
-        document = new Document(("This is the first line" + unixLineSeparator).getBytes());
+        String oldMacLineBreak = "\r";
+        document = new TextDocument(("This is the first line" + oldMacLineBreak).getBytes());
 
         // WHEN
-        byte[] separator = document.getLineSeparator();
+        LineBreak lineBreak = document.getLineBreak();
 
         // THEN
-        assertThat(separator, is(equalTo(UNIX_LINE_SEPARATOR)));
+        assertThat(lineBreak, is(equalTo(OLD_MAC_LINE_BREAK)));
     }
 
     @Test
-    public void getLineSeparator_shouldReturnTheOldMacLineSeparator_whenDocumentEndsWithCarriageReturn() {
+    public void getLineBreak_shouldReturnTheWindowsLineBreak_whenDocumentEndsWithCarriageReturnPlusLineFeed() {
         // GIVEN
-        String oldMacLineSeparator = "\r";
-        document = new Document(("This is the first line" + oldMacLineSeparator).getBytes());
+        String windowsLineBreak = "\r\n";
+        document = new TextDocument(("This is the first line" + windowsLineBreak).getBytes());
 
         // WHEN
-        byte[] separator = document.getLineSeparator();
+        LineBreak lineBreak = document.getLineBreak();
 
         // THEN
-        assertThat(separator, is(equalTo(OLD_MAC_LINE_SEPARATOR)));
+        assertThat(lineBreak, is(equalTo(WINDOWS_LINE_BREAK)));
     }
 
     @Test
-    public void getLineSeparator_shouldReturnTheWindowsLineSeparator_whenDocumentEndsWithCarriageReturnPlusLineFeed() {
+    public void getLineBreak_shouldReturnTheOldMacLineBreak_whenDocumentHasMultipleLinesAndOldMacFormatting() {
         // GIVEN
-        String windowsLineSeparator = "\r\n";
-        document = new Document(("This is the first line" + windowsLineSeparator).getBytes());
+        String oldMacLineBreak = "\r";
+        document = new TextDocument(("This is the first line" + oldMacLineBreak + "This is the second line").getBytes());
 
         // WHEN
-        byte[] separator = document.getLineSeparator();
+        LineBreak lineBreak = document.getLineBreak();
 
         // THEN
-        assertThat(separator, is(equalTo(WINDOWS_LINE_SEPARATOR)));
+        assertThat(lineBreak, is(equalTo(OLD_MAC_LINE_BREAK)));
     }
 
     @Test
-    public void getLineSeparator_shouldReturnTheOldMacLineSeparator_whenDocumentHasMultipleLinesAndOldMacFormatting() {
+    public void getLineBreak_shouldReturnUnixLineBreak_whenDocumentHasOnlyMultipleUnixLineBreaks() {
         // GIVEN
-        String oldMacLineSeparator = "\r";
-        document = new Document(("This is the first line" + oldMacLineSeparator + "This is the second line").getBytes());
+        String unixLineBreak = "\n";
+        document = new TextDocument((unixLineBreak + unixLineBreak + unixLineBreak).getBytes());
 
         // WHEN
-        byte[] separator = document.getLineSeparator();
+        LineBreak lineBreak = document.getLineBreak();
 
         // THEN
-        assertThat(separator, is(equalTo(OLD_MAC_LINE_SEPARATOR)));
+        assertThat(lineBreak, is(equalTo(UNIX_LINE_BREAK)));
     }
 
     @Test
-    public void getLineSeparator_shouldReturnUnixLineSeparator_whenDocumentHasOnlyMultipleUnixSeparators() {
+    public void getLineBreak_shouldReturnOldMacLineBreak_whenDocumentHasOnlyMultipleOldMacLineBreaks() {
         // GIVEN
-        String unixLineSeparator = "\n";
-        document = new Document((unixLineSeparator + unixLineSeparator + unixLineSeparator).getBytes());
+        String oldMacLineBreak = "\r";
+        document = new TextDocument((oldMacLineBreak + oldMacLineBreak + oldMacLineBreak).getBytes());
 
         // WHEN
-        byte[] separator = document.getLineSeparator();
+        LineBreak lineBreak = document.getLineBreak();
 
         // THEN
-        assertThat(separator, is(equalTo(UNIX_LINE_SEPARATOR)));
+        assertThat(lineBreak, is(equalTo(OLD_MAC_LINE_BREAK)));
     }
 
     @Test
-    public void getLineSeparator_shouldReturnOldMacLineSeparator_whenDocumentHasOnlyMultipleOldMacSeparators() {
+    public void getLineBreak_shouldReturnWindowsLineBreak_whenDocumentHasOnlyMultipleWindowsLineBreaks() {
         // GIVEN
-        String oldMacLineSeparator = "\r";
-        document = new Document((oldMacLineSeparator + oldMacLineSeparator + oldMacLineSeparator).getBytes());
+        String windowsLineBreak = "\r\n";
+        document = new TextDocument((windowsLineBreak + windowsLineBreak + windowsLineBreak).getBytes());
 
         // WHEN
-        byte[] separator = document.getLineSeparator();
+        LineBreak lineBreak = document.getLineBreak();
 
         // THEN
-        assertThat(separator, is(equalTo(OLD_MAC_LINE_SEPARATOR)));
-    }
-
-    @Test
-    public void getLineSeparator_shouldReturnWindowsLineSeparator_whenDocumentHasOnlyMultipleWindowsSeparators() {
-        // GIVEN
-        String windowsLineSeparator = "\r\n";
-        document = new Document((windowsLineSeparator + windowsLineSeparator + windowsLineSeparator).getBytes());
-
-        // WHEN
-        byte[] separator = document.getLineSeparator();
-
-        // THEN
-        assertThat(separator, is(equalTo(WINDOWS_LINE_SEPARATOR)));
+        assertThat(lineBreak, is(equalTo(WINDOWS_LINE_BREAK)));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void setLineSeparator_shouldThrowIllegalArgumentException_whenPassesArgumentIsNull() {
-        // GIVEN
-        byte[] lineSeparator = null;
-
-        // WHEN
-        document.setLineSeparator(lineSeparator);
-        // THEN EXPECT EXCEPTION TO BE THROWN
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void setLineSeparator_shouldThrowIllegalArgumentException_whenPassesArgumentIsEmptyArray() {
-        // GIVEN
-        byte[] lineSeparator = new byte[0];
-
-        // WHEN
-        document.setLineSeparator(lineSeparator);
-        // THEN EXPECT EXCEPTION TO BE THROWN
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void setLineSeparator_shouldThrowIllegalArgumentException_whenArgumentIsOtherThenDefinedLineSeparators() {
-        // GIVEN
-        byte[] lineSeparator = new byte[]{30};
-
-        // WHEN
-        document.setLineSeparator(lineSeparator);
-        // THEN EXPECT EXCEPTION TO BE THROWN
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void setLineSeparator_shouldThrowIllegalArgumentException_whenArgumentIsOtherThenDefinedLineSeparatorsLong() {
-        // GIVEN
-        byte[] lineSeparator = new byte[]{30,45,111};
-
-        // WHEN
-        document.setLineSeparator(lineSeparator);
-        // THEN EXPECT EXCEPTION TO BE THROWN
-    }
-
-    @Test
-    public void setLineSeparator_shouldSetLineSeparatorToWindowsLineSeparator_whenArgumentIsWindowsLineSeparators() {
+    public void setLineBreak_shouldThrowIllegalArgumentException_whenPassesArgumentIsNull() {
         // GIVEN Setup
 
         // WHEN
-        document.setLineSeparator(WINDOWS_LINE_SEPARATOR);
-
-        // THEN
-        assertThat(document.getLineSeparator(), is(equalTo(WINDOWS_LINE_SEPARATOR)));
+        document.setLineBreak(null);
+        // THEN EXPECT EXCEPTION TO BE THROWN
     }
 
-    @Test
-    public void setLineSeparator_shouldSetLineSeparatorToUnixLineSeparator_whenArgumentIsUnixLineSeparators() {
+    @Test(expected = IllegalArgumentException.class)
+    public void setLineBreak_shouldThrowIllegalArgumentException_whenArgumentIsOtherThenDefinedLineBreaks() {
         // GIVEN Setup
 
         // WHEN
-        document.setLineSeparator(UNIX_LINE_SEPARATOR);
-
-        // THEN
-        assertThat(document.getLineSeparator(), is(equalTo(UNIX_LINE_SEPARATOR)));
+        document.setLineBreak(UNDEFINED_LINE_BREAK);
+        // THEN EXPECT EXCEPTION TO BE THROWN
     }
 
     @Test
-    public void setLineSeparator_shouldSetLineSeparatorToOldMacLineSeparator_whenArgumentIsOldMacLineSeparators() {
+    public void setLineBreak_shouldSetLineBreakToWindowsLineBreak_whenArgumentIsWindowsLineBreak() {
         // GIVEN Setup
 
         // WHEN
-        document.setLineSeparator(OLD_MAC_LINE_SEPARATOR);
+        document.setLineBreak(WINDOWS_LINE_BREAK);
 
         // THEN
-        assertThat(document.getLineSeparator(), is(equalTo(OLD_MAC_LINE_SEPARATOR)));
+        assertThat(document.getLineBreak(), is(equalTo(WINDOWS_LINE_BREAK)));
+    }
+
+    @Test
+    public void setLineBreak_shouldSetLineBreakToUnixLineBreak_whenArgumentIsUnixLineBreak() {
+        // GIVEN Setup
+
+        // WHEN
+        document.setLineBreak(UNIX_LINE_BREAK);
+
+        // THEN
+        assertThat(document.getLineBreak(), is(equalTo(UNIX_LINE_BREAK)));
+    }
+
+    @Test
+    public void setLineBreak_shouldSetLineBreakToOldMacLineBreak_whenArgumentIsOldMacLineBreak() {
+        // GIVEN Setup
+
+        // WHEN
+        document.setLineBreak(OLD_MAC_LINE_BREAK);
+
+        // THEN
+        assertThat(document.getLineBreak(), is(equalTo(OLD_MAC_LINE_BREAK)));
     }
 
     @Test
     public void getNumberOfLines_shouldReturnCountEqualToZeroInEmptyDocument_always() {
         // GIVEN
         String text = "";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         int numberOfLines = document.getNumberOfLines();
@@ -274,7 +253,7 @@ public class DocumentTest {
     public void getNumberOfLines_shouldReturnCountEqualToOneInNonEmptyDocumentWithOneLine_always() {
         // GIVEN
         String text = "One line";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         int numberOfLines = document.getNumberOfLines();
@@ -284,10 +263,10 @@ public class DocumentTest {
     }
 
     @Test
-    public void getNumberOfLines_shouldReturnCountOfLinesInDocumentSeparatedWithWindowsLineSeparator_always() {
+    public void getNumberOfLines_shouldReturnCountOfLinesInDocumentSeparatedWithWindowsLineBreak_always() {
         // GIVEN
         String text = "The first line\r\nThe second line\r\nThe third line";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         int numberOfLines = document.getNumberOfLines();
@@ -297,10 +276,10 @@ public class DocumentTest {
     }
 
     @Test
-    public void getNumberOfLines_shouldReturnCountOfLinesInDocumentSeparatedWithUnixLineSeparator_always() {
+    public void getNumberOfLines_shouldReturnCountOfLinesInDocumentSeparatedWithUnixLineBreak_always() {
         // GIVEN
         String text = "The first line\nThe second line\nThe third line";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         int numberOfLines = document.getNumberOfLines();
@@ -310,10 +289,10 @@ public class DocumentTest {
     }
 
     @Test
-    public void getNumberOfLines_shouldReturnCountOfLinesInDocumentSeparatedWithOldMacLineSeparator_always() {
+    public void getNumberOfLines_shouldReturnCountOfLinesInDocumentSeparatedWithOldMacLineBreak_always() {
         // GIVEN
         String text = "The first line\rThe second line\rThe third line";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         int numberOfLines = document.getNumberOfLines();
@@ -323,10 +302,10 @@ public class DocumentTest {
     }
 
     @Test
-    public void getNumberOfLines_shouldReturnCountOfLinesPlusOne_whenDocumentEndsWithWindowsLineSeparator() {
+    public void getNumberOfLines_shouldReturnCountOfLinesPlusOne_whenDocumentEndsWithWindowsLineBreak() {
         // GIVEN
         String text = "The first line\r\nThe second line\r\nThe third line\r\n";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         int numberOfLines = document.getNumberOfLines();
@@ -336,10 +315,10 @@ public class DocumentTest {
     }
 
     @Test
-    public void getNumberOfLines_shouldReturnCountOfLinesPlusOne_whenDocumentEndsWithUnixLineSeparator() {
+    public void getNumberOfLines_shouldReturnCountOfLinesPlusOne_whenDocumentEndsWithUnixLineBreak() {
         // GIVEN
         String text = "The first line\nThe second line\nThe third line\n";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         int numberOfLines = document.getNumberOfLines();
@@ -349,10 +328,10 @@ public class DocumentTest {
     }
 
     @Test
-    public void getNumberOfLines_shouldReturnCountOfLinesPlusOne_whenDocumentEndsWithOldMacLineSeparator() {
+    public void getNumberOfLines_shouldReturnCountOfLinesPlusOne_whenDocumentEndsWithOldMacLineBreak() {
         // GIVEN
         String text = "The first line\rThe second line\rThe third line\r";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         int numberOfLines = document.getNumberOfLines();
@@ -362,10 +341,10 @@ public class DocumentTest {
     }
 
     @Test
-    public void getNumberOfLines_shouldReturnFour_whenDocumentContainsOnlyThreeWindowsLineSeparators() {
+    public void getNumberOfLines_shouldReturnFour_whenDocumentContainsOnlyThreeWindowsLineBreak() {
         // GIVEN
         String text = "\r\n\r\n\r\n";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         int numberOfLines = document.getNumberOfLines();
@@ -375,10 +354,10 @@ public class DocumentTest {
     }
 
     @Test
-    public void getNumberOfLines_shouldReturnFour_whenDocumentContainsOnlyThreeUnixLineSeparators() {
+    public void getNumberOfLines_shouldReturnFour_whenDocumentContainsOnlyThreeUnixLineBreak() {
         // GIVEN
         String text = "\n\n\n";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         int numberOfLines = document.getNumberOfLines();
@@ -388,10 +367,10 @@ public class DocumentTest {
     }
 
     @Test
-    public void getNumberOfLines_shouldReturnFour_whenDocumentContainsOnlyThreeOldMacLineSeparators() {
+    public void getNumberOfLines_shouldReturnFour_whenDocumentContainsOnlyThreeOldMacLineBreak() {
         // GIVEN
         String text = "\r\r\r";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         int numberOfLines = document.getNumberOfLines();
@@ -404,7 +383,7 @@ public class DocumentTest {
     public void getLines_shouldReturnEmptyList_whenFileContentIsEmpty() {
         // GIVEN
         String text = "";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         List<byte[]> lines = document.getLines();
@@ -417,7 +396,7 @@ public class DocumentTest {
     public void getLines_shouldReturnListOfOneElementAndContainingTheLine_whenFileContentHasContentButNoLinebreak() {
         // GIVEN
         String text = "Some content";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         List<byte[]> lines = document.getLines();
@@ -431,7 +410,7 @@ public class DocumentTest {
     public void getLines_shouldReturnListWithTwoEmptyLines_whenFileContentIsOnlyUnixLineBrakeSymbols() {
         // GIVEN
         String text = "\n";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         List<byte[]> lines = document.getLines();
@@ -446,7 +425,7 @@ public class DocumentTest {
     public void getLines_shouldReturnListWithTwoEmptyLines_whenFileContentIsOnlyOldMacLineBrakeSymbols() {
         // GIVEN
         String text = "\r";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         List<byte[]> lines = document.getLines();
@@ -461,7 +440,7 @@ public class DocumentTest {
     public void getLines_shouldReturnListWithTwoEmptyLines_whenFileContentIsOnlyWindowsLineBrakeSymbols() {
         // GIVEN
         String text = "\r\n";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         List<byte[]> lines = document.getLines();
@@ -476,7 +455,7 @@ public class DocumentTest {
     public void getLines_shouldReturnListWithTwoLines_whenFileContentIsUnixLineBrakePlusText() {
         // GIVEN
         String text = "\nThe second Line";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         List<byte[]> lines = document.getLines();
@@ -491,7 +470,7 @@ public class DocumentTest {
     public void getLines_shouldReturnListWithTwoLines_whenFileContentIsOldMacLineBrakePlusText() {
         // GIVEN
         String text = "\rThe second Line";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         List<byte[]> lines = document.getLines();
@@ -506,7 +485,7 @@ public class DocumentTest {
     public void getLines_shouldReturnListWithTwoLines_whenFileContentIsWindowsLineBrakePlusText() {
         // GIVEN
         String text = "\r\nThe second Line";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         List<byte[]> lines = document.getLines();
@@ -521,7 +500,7 @@ public class DocumentTest {
     public void getLines_shouldReturnListWithTwoLines_whenFileContentIsTextPlusUnixLineBrake() {
         // GIVEN
         String text = "The second Line\n";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         List<byte[]> lines = document.getLines();
@@ -536,7 +515,7 @@ public class DocumentTest {
     public void getLines_shouldReturnListWithTwoLines_whenFileContentIsTextPlusOldMacLineBrake() {
         // GIVEN
         String text = "The second Line\r";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         List<byte[]> lines = document.getLines();
@@ -551,7 +530,7 @@ public class DocumentTest {
     public void getLines_shouldReturnListWithTwoLines_whenFileContentIsTextPlusWindowsLineBrake() {
         // GIVEN
         String text = "The second Line\r\n";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         List<byte[]> lines = document.getLines();
@@ -566,7 +545,7 @@ public class DocumentTest {
     public void getLines_shouldReturnListOfBytesRepresentingLines_whenFileContentHasMultipleLinesAndUnixLineBreak() {
         // GIVEN
         String text = "The first line\nThe second line\nThe third line";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         List<byte[]> lines = document.getLines();
@@ -582,7 +561,7 @@ public class DocumentTest {
     public void getLines_shouldReturnListOfBytesRepresentingLines_whenFileContentHasMultipleLinesAndOldMacLineBreak() {
         // GIVEN
         String text = "The first line\rThe second line\rThe third line";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         List<byte[]> lines = document.getLines();
@@ -598,7 +577,7 @@ public class DocumentTest {
     public void getLines_shouldReturnListOfBytesRepresentingLines_whenFileContentHasMultipleLinesAndWindowsLineBreak() {
         // GIVEN
         String text = "The first line\r\nThe second line\r\nThe third line";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         List<byte[]> lines = document.getLines();
@@ -614,7 +593,7 @@ public class DocumentTest {
     public void getLines_shouldReturnFourEmptyLines_whenFileContainsOnlyThreeUnixLineBreaks() {
         // GIVEN
         String text = "\n\n\n";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         List<byte[]> lines = document.getLines();
@@ -631,7 +610,7 @@ public class DocumentTest {
     public void getLines_shouldReturnFourEmptyLines_whenFileContainsOnlyThreeOldMacLineBreaks() {
         // GIVEN
         String text = "\r\r\r";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         List<byte[]> lines = document.getLines();
@@ -648,7 +627,7 @@ public class DocumentTest {
     public void getLines_shouldReturnFourEmptyLines_whenFileContainsOnlyThreeWindowsLineBreaks() {
         // GIVEN
         String text = "\r\n\r\n\r\n";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         List<byte[]> lines = document.getLines();
@@ -665,7 +644,7 @@ public class DocumentTest {
     public void getLines_shouldReturnFourEmptyLines_whenFileContainsThreeUnixLineBreaksAndText() {
         // GIVEN
         String text = "\n\ntext\n";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         List<byte[]> lines = document.getLines();
@@ -682,7 +661,7 @@ public class DocumentTest {
     public void getLines_shouldReturnFourEmptyLines_whenFileContainsThreeOldMacLineBreaksAndText() {
         // GIVEN
         String text = "\r\rtext\r";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         List<byte[]> lines = document.getLines();
@@ -699,7 +678,7 @@ public class DocumentTest {
     public void getLines_shouldReturnFourEmptyLines_whenFileContainsThreeWindowsLineBreaksAndText() {
         // GIVEN
         String text = "\r\n\r\ntext\r\n";
-        document = new Document(text.getBytes());
+        document = new TextDocument(text.getBytes());
 
         // WHEN
         List<byte[]> lines = document.getLines();

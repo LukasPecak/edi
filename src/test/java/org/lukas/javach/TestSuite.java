@@ -2,7 +2,8 @@ package org.lukas.javach;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.lukas.javach.model.DocumentTest;
+import org.lukas.javach.model.LineBreakTest;
+import org.lukas.javach.model.TextDocumentTest;
 
 /**
  * Created by Lukas on 28.07.2019.
@@ -12,6 +13,7 @@ import org.lukas.javach.model.DocumentTest;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         EdiTest.class,
-        DocumentTest.class
+        TextDocumentTest.class,
+        LineBreakTest.class
 })
 public class TestSuite {}
