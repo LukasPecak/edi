@@ -168,7 +168,7 @@ class Document {
         if (Arrays.equals(OLD_MAC_LINE_SEPARATOR, lineSeparator)) {
             return calculateIndexesForOldMacLineSeparator();
         }
-        return new int[0];
+        throw new IllegalStateException("Line separator for document not set");
     }
 
     private int[] calculateIndexesForOldMacLineSeparator() {
@@ -208,4 +208,16 @@ class Document {
         return toIntArray(lineBreaks);
     }
 
+    void setLineSeparator(byte[] lineSeparator) {
+        if (!isKnownLineSeparator(lineSeparator)) {
+            throw new IllegalArgumentException("Tried to set null value as line separator");
+        }
+        this.lineSeparator = lineSeparator;
+    }
+
+    private boolean isKnownLineSeparator(byte[] lineSeparator) {
+        return Arrays.equals(WINDOWS_LINE_SEPARATOR, lineSeparator)
+                || Arrays.equals(UNIX_LINE_SEPARATOR, lineSeparator)
+                || Arrays.equals(OLD_MAC_LINE_SEPARATOR, lineSeparator);
+    }
 }

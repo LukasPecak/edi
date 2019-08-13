@@ -184,6 +184,79 @@ public class DocumentTest {
         assertThat(separator, is(equalTo(WINDOWS_LINE_SEPARATOR)));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void setLineSeparator_shouldThrowIllegalArgumentException_whenPassesArgumentIsNull() {
+        // GIVEN
+        byte[] lineSeparator = null;
+
+        // WHEN
+        document.setLineSeparator(lineSeparator);
+        // THEN EXPECT EXCEPTION TO BE THROWN
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setLineSeparator_shouldThrowIllegalArgumentException_whenPassesArgumentIsEmptyArray() {
+        // GIVEN
+        byte[] lineSeparator = new byte[0];
+
+        // WHEN
+        document.setLineSeparator(lineSeparator);
+        // THEN EXPECT EXCEPTION TO BE THROWN
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setLineSeparator_shouldThrowIllegalArgumentException_whenArgumentIsOtherThenDefinedLineSeparators() {
+        // GIVEN
+        byte[] lineSeparator = new byte[]{30};
+
+        // WHEN
+        document.setLineSeparator(lineSeparator);
+        // THEN EXPECT EXCEPTION TO BE THROWN
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setLineSeparator_shouldThrowIllegalArgumentException_whenArgumentIsOtherThenDefinedLineSeparatorsLong() {
+        // GIVEN
+        byte[] lineSeparator = new byte[]{30,45,111};
+
+        // WHEN
+        document.setLineSeparator(lineSeparator);
+        // THEN EXPECT EXCEPTION TO BE THROWN
+    }
+
+    @Test
+    public void setLineSeparator_shouldSetLineSeparatorToWindowsLineSeparator_whenArgumentIsWindowsLineSeparators() {
+        // GIVEN Setup
+
+        // WHEN
+        document.setLineSeparator(WINDOWS_LINE_SEPARATOR);
+
+        // THEN
+        assertThat(document.getLineSeparator(), is(equalTo(WINDOWS_LINE_SEPARATOR)));
+    }
+
+    @Test
+    public void setLineSeparator_shouldSetLineSeparatorToUnixLineSeparator_whenArgumentIsUnixLineSeparators() {
+        // GIVEN Setup
+
+        // WHEN
+        document.setLineSeparator(UNIX_LINE_SEPARATOR);
+
+        // THEN
+        assertThat(document.getLineSeparator(), is(equalTo(UNIX_LINE_SEPARATOR)));
+    }
+
+    @Test
+    public void setLineSeparator_shouldSetLineSeparatorToOldMacLineSeparator_whenArgumentIsOldMacLineSeparators() {
+        // GIVEN Setup
+
+        // WHEN
+        document.setLineSeparator(OLD_MAC_LINE_SEPARATOR);
+
+        // THEN
+        assertThat(document.getLineSeparator(), is(equalTo(OLD_MAC_LINE_SEPARATOR)));
+    }
+
     @Test
     public void getNumberOfLines_shouldReturnCountEqualToZeroInEmptyDocument_always() {
         // GIVEN

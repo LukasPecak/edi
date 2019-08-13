@@ -22,26 +22,26 @@ import static org.junit.Assert.assertThat;
  */
 public class EdiTest {
 
-    private Edi edi;
+    private Edi sut;
 
     @Before
     public void setupTests() {
-        edi = new Edi();
+        sut = new Edi();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void throwIllegalArgumentException_whenNoFileNameIsProvided() {
-        edi.loadBytes("");
+        sut.loadBytes("");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void throwIllegalArgumentException_whenPassedArgumentIsNull() {
-        edi.loadBytes(null);
+        sut.loadBytes(null);
     }
 
     @Test
     public void returnNull_whenFileNotFound() {
-        byte[] bytes = edi.loadBytes("nonExistingPath");
+        byte[] bytes = sut.loadBytes("nonExistingPath");
 
         assertThat(bytes, is(nullValue()));
     }
@@ -49,7 +49,7 @@ public class EdiTest {
     @Test
     public void returnListWithFileLines_whenFileExists() {
 
-        byte[] bytes = edi.loadBytes("src/test/resources/sampleFile.txt");
+        byte[] bytes = sut.loadBytes("src/test/resources/sampleFile.txt");
 
         assertThat(bytes, is(notNullValue()));
     }
@@ -57,14 +57,14 @@ public class EdiTest {
     @Test
     public void loadFile() {
         String pathString = "src/test/resources/sampleFile.txt";
-        byte[] bytes = edi.loadBytes(pathString);
+        byte[] bytes = sut.loadBytes(pathString);
 
         assertThat(new String(bytes), is(equalTo("Sample file with sample content")));
     }
 
     @Test
     public void readMultipleLinesFromFile_shouldHaveTheLineFeedAndCarriageReturn_whenWindowsMultiLineFile() {
-        byte[] bytes = edi.loadBytes("src/test/resources/sampleMultilineFile.txt");
+        byte[] bytes = sut.loadBytes("src/test/resources/sampleMultilineFile.txt");
 
         assertThat(bytes, hasItemInArray((byte) 0x0A));
         assertThat(bytes, hasItemInArray((byte) 0x0D));
@@ -100,13 +100,25 @@ public class EdiTest {
         byte[] bytesOriginal = Files.readAllBytes(path);
 
         // Clear file content
-        edi.saveBytes(new byte[0], pathString);
+        sut.saveBytes(new byte[0], pathString);
         byte[] bytesEdited = Files.readAllBytes(path);
         assertThat(bytesEdited.length, is(0));
 
         // Restore the original content
-        edi.saveBytes(bytesOriginal, pathString);
+        sut.saveBytes(bytesOriginal, pathString);
         bytesEdited = Files.readAllBytes(path);
         assertThat(bytesEdited, is(equalTo(bytesOriginal)));
+    }
+
+    @Test
+    public void saveFile_shouldThrowIOExceptionAndLogError_whenPathStringIsEmpty() {
+        // GIVEN
+        String pathString = "";
+        byte[] content = "Some file content\n".getBytes();
+
+        // WHEN
+        sut.saveBytes(content, pathString);
+
+        // THEN THROW/CATCH EXCEPTION AND LOG ERROR
     }
 }
