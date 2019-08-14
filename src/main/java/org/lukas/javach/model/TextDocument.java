@@ -12,7 +12,7 @@ import static org.lukas.javach.model.LineBreak.*;
  *
  * @author Lukas Pecak
  */
-class TextDocument {
+class TextDocument implements Document  {
 
     private static final int CARRIAGE_RETURN = 0x0D;
     private static final int LINE_FEED = 0x0A;
@@ -70,15 +70,18 @@ class TextDocument {
         return UNDEFINED_LINE_BREAK;
     }
 
-    byte[] getBytes() {
+    @Override
+    public byte[] getBytes() {
         return bytes;
     }
 
-    LineBreak getLineBreak() {
+    @Override
+    public LineBreak getLineBreak() {
         return lineBreak;
     }
 
-    int getNumberOfLines() {
+    @Override
+    public int getNumberOfLines() {
         if (numberOfLines < 0) {
             numberOfLines = countNumberOfLines();
         }
@@ -128,7 +131,8 @@ class TextDocument {
         return lineCount;
     }
 
-    List<byte[]> getLines() {
+    @Override
+    public List<byte[]> getLines() {
         if (bytes.length == 0) {
             return Collections.emptyList();
         }
@@ -205,7 +209,8 @@ class TextDocument {
         return toIntArray(lineBreaks);
     }
 
-    void setLineBreak(LineBreak lineBreak) {
+    @Override
+    public void setLineBreak(LineBreak lineBreak) {
         if (!isKnownLineBreak(lineBreak)) {
             throw new IllegalArgumentException("Tried to set null value as line break");
         }

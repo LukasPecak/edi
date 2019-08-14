@@ -31,11 +31,11 @@ public interface Document {
      * Method to get the line separator that was detected or set for this document
      * @return Line separator as Enum
      */
-    byte[] getLineSeparator();
+    LineBreak getLineBreak();
 
     /**
      * Method to set the line separator (override the detected one)
-     * @param lineSeparator as Enum value
+     * @param lineBreak as Enum value
      */
-    void setLineSeparator(byte[] lineSeparator);
+    void setLineBreak(LineBreak lineBreak);
 }
