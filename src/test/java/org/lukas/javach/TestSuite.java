@@ -4,6 +4,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.lukas.javach.document.LineBreakTest;
 import org.lukas.javach.document.TextDocumentTest;
+import org.lukas.javach.editor.EditorTest;
 
 /**
  * Created by Lukas on 28.07.2019.
@@ -14,6 +15,7 @@ import org.lukas.javach.document.TextDocumentTest;
 @Suite.SuiteClasses({
         EdiTest.class,
         TextDocumentTest.class,
-        LineBreakTest.class
+        LineBreakTest.class,
+        EditorTest.class
 })
 public class TestSuite {}

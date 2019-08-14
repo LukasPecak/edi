@@ -12,12 +12,12 @@ import static org.lukas.javach.document.LineBreak.resolveLineBreak;
  *
  * @author Lukas Pecak
  */
-class TextDocument implements Document {
+public class TextDocument implements Document {
 
     private final List<byte[]> lines;
     private LineBreak lineBreak;
 
-    TextDocument(byte[] bytes) {
+    public TextDocument(byte[] bytes) {
         if (bytes == null) {
             throw new IllegalArgumentException("Cannot initialize a document with a null array of bytes");
         }
