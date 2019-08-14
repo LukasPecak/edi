@@ -1,4 +1,4 @@
-package org.lukas.javach.model;
+package org.lukas.javach.document;
 
 import java.util.Arrays;
 

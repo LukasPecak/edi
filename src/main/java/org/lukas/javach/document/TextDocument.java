@@ -1,11 +1,11 @@
-package org.lukas.javach.model;
+package org.lukas.javach.document;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import static org.lukas.javach.model.LineBreak.isKnownLineBreak;
-import static org.lukas.javach.model.LineBreak.resolveLineBreak;
+import static org.lukas.javach.document.LineBreak.isKnownLineBreak;
+import static org.lukas.javach.document.LineBreak.resolveLineBreak;
 
 /**
  * Created by Lukas on 28.07.2019.

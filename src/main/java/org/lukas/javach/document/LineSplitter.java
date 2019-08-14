@@ -1,11 +1,11 @@
-package org.lukas.javach.model;
+package org.lukas.javach.document;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.lukas.javach.model.LineBreak.*;
+import static org.lukas.javach.document.LineBreak.*;
 
 class LineSplitter {
 

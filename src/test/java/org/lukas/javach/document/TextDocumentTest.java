@@ -1,4 +1,4 @@
-package org.lukas.javach.model;
+package org.lukas.javach.document;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -8,7 +8,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.lukas.javach.model.LineBreak.*;
+import static org.lukas.javach.document.LineBreak.*;
 
 /**
  * Created by Lukas on 28.07.2019.
