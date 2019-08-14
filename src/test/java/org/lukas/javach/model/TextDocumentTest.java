@@ -3,7 +3,6 @@ package org.lukas.javach.model;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.sound.sampled.Line;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -59,26 +58,26 @@ public class TextDocumentTest {
     @Test
     public void getLineBreak_shouldReturnTheSystemDefaultLineBreak_whenDocumentIsEmpty() {
         // GIVEN
-        byte[] systemBreak = System.lineSeparator().getBytes();
+        byte[] systemLineBreak = System.lineSeparator().getBytes();
 
         // WHEN
         LineBreak lineBreak = document.getLineBreak();
 
         // THEN
-        assertThat(lineBreak.getBytes(), is(equalTo(systemBreak)));
+        assertThat(lineBreak.getBytes(), is(equalTo(systemLineBreak)));
     }
 
     @Test
     public void getLineLineBreak_shouldReturnTheSystemDefaultLineLineBreak_whenDocumentHasOnlyOneLine() {
         // GIVEN
         document = new TextDocument("One line test only. Without line lineBreak".getBytes());
-        byte[] systemSeparator = System.lineSeparator().getBytes();
+        byte[] systemLineBreak = System.lineSeparator().getBytes();
 
         // WHEN
         LineBreak lineBreak = document.getLineBreak();
 
         // THEN
-        assertThat(lineBreak.getBytes(), is(equalTo(systemSeparator)));
+        assertThat(lineBreak.getBytes(), is(equalTo(systemLineBreak)));
     }
 
     @Test
