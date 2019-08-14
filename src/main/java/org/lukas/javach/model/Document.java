@@ -28,13 +28,13 @@ public interface Document {
     int getNumberOfLines();
 
     /**
-     * Method to get the line separator that was detected or set for this document
-     * @return Line separator as Enum
+     * Method to get the line break that was detected or set for this document
+     * @return LineBreak type Enum
      */
     LineBreak getLineBreak();
 
     /**
-     * Method to set the line separator (override the detected one)
+     * Method to set the line break (override the detected one)
      * @param lineBreak as Enum value
      */
     void setLineBreak(LineBreak lineBreak);

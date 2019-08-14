@@ -13,6 +13,9 @@ public enum LineBreak {
     OLD_MAC_LINE_BREAK(new byte[]{0x0D}),
     UNDEFINED_LINE_BREAK(new byte[0]);
 
+    private static final int CARRIAGE_RETURN = 0x0D;
+    private static final int LINE_FEED = 0x0A;
+
     private byte[] bytes;
 
     LineBreak(byte[] bytes) {
@@ -49,5 +52,49 @@ public enum LineBreak {
      */
     static LineBreak systemDefaultLineBreak() {
         return valueOf(System.lineSeparator().getBytes());
+    }
+
+    /**
+     * Method to resolve line break type for the given byte array
+     * @param bytes Input byte arrays where line break to be found
+     * @return First found line break type in the array or system line brake if not found
+     */
+    static LineBreak resolveLineBreak(byte[] bytes) {
+        if (bytes.length == 0) {
+            return LineBreak.systemDefaultLineBreak();
+        }
+        LineBreak firstLineBreak = findFirstLineBreak(bytes);
+        if (firstLineBreak != UNDEFINED_LINE_BREAK) {
+            return firstLineBreak;
+        }
+        LineBreak lineBreakAtLastByte = findLineBreakAtLastByte(bytes);
+        if (lineBreakAtLastByte != UNDEFINED_LINE_BREAK) {
+            return lineBreakAtLastByte;
+        }
+        return systemDefaultLineBreak();
+    }
+
+    private static LineBreak findFirstLineBreak(byte[] bytes) {
+        for (int i = 0; i < bytes.length - 1; i++) {
+            if (bytes[i] == CARRIAGE_RETURN) {
+                if (bytes[i + 1] == LINE_FEED) {
+                    return WINDOWS_LINE_BREAK;
+                }
+                return OLD_MAC_LINE_BREAK;
+            } else if (bytes[i] == LINE_FEED) {
+                return UNIX_LINE_BREAK;
+            }
+        }
+        return UNDEFINED_LINE_BREAK;
+    }
+
+    private static LineBreak findLineBreakAtLastByte(byte[] bytes) {
+        byte lastByte = bytes[bytes.length - 1];
+        if (lastByte == LINE_FEED) {
+            return UNIX_LINE_BREAK;
+        } else if (lastByte == CARRIAGE_RETURN) {
+            return OLD_MAC_LINE_BREAK;
+        }
+        return UNDEFINED_LINE_BREAK;
     }
 }
