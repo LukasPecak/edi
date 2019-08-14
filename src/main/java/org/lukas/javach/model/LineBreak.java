@@ -55,6 +55,17 @@ public enum LineBreak {
     }
 
     /**
+     * Method to test if the given LineBreak object is a known line break
+     * @param lineBreak Given LineBreak object
+     * @return true if input object represents windows, unix or old mac line break; false for other cases
+     */
+    static boolean isKnownLineBreak(LineBreak lineBreak) {
+        return WINDOWS_LINE_BREAK.equals(lineBreak)
+                || UNIX_LINE_BREAK.equals(lineBreak)
+                || OLD_MAC_LINE_BREAK.equals(lineBreak);
+    }
+
+    /**
      * Method to resolve line break type for the given byte array
      * @param bytes Input byte arrays where line break to be found
      * @return First found line break type in the array or system line brake if not found
