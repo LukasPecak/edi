@@ -12,12 +12,12 @@ import static org.lukas.javach.document.LineBreak.resolveLineBreak;
  *
  * @author Lukas Pecak
  */
-public class TextDocument implements Document {
+public class TextContent implements DocumentContent {
 
     private final List<byte[]> lines;
     private LineBreak lineBreak;
 
-    public TextDocument(byte[] bytes) {
+    TextContent(byte[] bytes) {
         if (bytes == null) {
             throw new IllegalArgumentException("Cannot initialize a document with a null array of bytes");
         }
@@ -27,18 +27,26 @@ public class TextDocument implements Document {
 
     @Override
     public byte[] getBytes() {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         for (int i = 0; i < lines.size(); i++) {
-            try {
-                bytes.write(lines.get(i));
-                if (i < lines.size() - 1) {
-                    bytes.write(lineBreak.getBytes());
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            appendLineToBuffer(buffer, i);
         }
-        return bytes.toByteArray();
+        return buffer.toByteArray();
+    }
+
+    private void appendLineToBuffer(ByteArrayOutputStream buffer, int i) {
+        try {
+            buffer.write(lines.get(i));
+            if (!isLastLine(i)) {
+                buffer.write(lineBreak.getBytes());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean isLastLine(int i) {
+        return i == lines.size() - 1;
     }
 
     @Override

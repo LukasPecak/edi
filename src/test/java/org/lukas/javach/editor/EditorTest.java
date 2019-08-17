@@ -1,10 +1,9 @@
 package org.lukas.javach.editor;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.lukas.javach.document.Document;
-import org.lukas.javach.document.TextDocument;
-import org.lukas.javach.document.TextDocumentTest;
 
 /**
  * Created by Lukas on 14.08.2019.
@@ -29,18 +28,5 @@ public class EditorTest {
         editor.openDocument(document);
 
         // THEN THROW
-    }
-
-    @Test
-    public void openDocument_shouldOpenDocument_whenDocumentReferenceIsNotNull() {
-        // GIVE
-        byte[] contentBytes = "first line\nsecond line".getBytes();
-        Document document = new TextDocument(contentBytes);
-
-        // WHEN
-        editor.openDocument(document);
-
-        // THEN
-        // document is open
     }
 }

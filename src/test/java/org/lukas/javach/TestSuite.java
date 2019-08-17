@@ -2,8 +2,9 @@ package org.lukas.javach;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.lukas.javach.document.DocumentMetadataTest;
 import org.lukas.javach.document.LineBreakTest;
-import org.lukas.javach.document.TextDocumentTest;
+import org.lukas.javach.document.TextContentTest;
 import org.lukas.javach.editor.EditorTest;
 
 /**
@@ -14,8 +15,9 @@ import org.lukas.javach.editor.EditorTest;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         EdiTest.class,
-        TextDocumentTest.class,
+        TextContentTest.class,
         LineBreakTest.class,
-        EditorTest.class
+        EditorTest.class,
+        DocumentMetadataTest.class
 })
 public class TestSuite {}
