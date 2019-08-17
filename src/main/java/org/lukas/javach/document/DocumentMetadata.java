@@ -1,5 +1,7 @@
 package org.lukas.javach.document;
 
+import org.lukas.javach.exception.UnsatisfiedDocumentMetadataException;
+
 import java.nio.file.Path;
 import java.time.Instant;
 
@@ -66,7 +68,27 @@ class DocumentMetadata {
             metadata.fileSize = fileSize;
             metadata.regularFile = regularFile;
 
+            ensureAllRequiredDataSet();
+
             return metadata;
+        }
+
+        private void ensureAllRequiredDataSet() {
+            if (fileName == null) {
+                throw new UnsatisfiedDocumentMetadataException("File name is not set");
+            }
+            if (path == null) {
+                throw new UnsatisfiedDocumentMetadataException("Path is not set");
+            }
+            if (lastModifiedTime == null) {
+                throw new UnsatisfiedDocumentMetadataException("Last modified time is not set");
+            }
+            if (lastAccessTime == null) {
+                throw new UnsatisfiedDocumentMetadataException("Last access time is not set");
+            }
+            if (creationTime == null) {
+                throw new UnsatisfiedDocumentMetadataException("Creation time is not set");
+            }
         }
 
     }
