@@ -21,12 +21,6 @@ public class DocumentMetadataTest {
 
     private DocumentMetadata documentMetadata;
 
-    @Before
-    public void setupTests() {
-//        MockitoAnnotations.initMocks(this);
-//        documentMetadata = new DocumentMetadata();
-    }
-
     @Test
     public void getFileName_shouldReturnFileName_whenDocumentWasReadFromFile() {
         // GIVEN
@@ -311,4 +305,5 @@ public class DocumentMetadataTest {
                 .setLastModifiedTime(Instant.MIN)
                 .setRegularFile(false);
     }
+
 }

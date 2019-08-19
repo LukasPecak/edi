@@ -4,6 +4,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.lukas.javach.document.DocumentMetadataTest;
 import org.lukas.javach.document.LineBreakTest;
+import org.lukas.javach.document.LineRangeTest;
 import org.lukas.javach.document.TextContentTest;
 import org.lukas.javach.editor.EditorTest;
 
@@ -18,6 +19,7 @@ import org.lukas.javach.editor.EditorTest;
         TextContentTest.class,
         LineBreakTest.class,
         EditorTest.class,
-        DocumentMetadataTest.class
+        DocumentMetadataTest.class,
+        LineRangeTest.class
 })
 public class TestSuite {}
