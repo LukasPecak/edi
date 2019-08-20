@@ -38,4 +38,18 @@ public interface DocumentContent {
      */
     void setLineBreak(LineBreak lineBreak);
 
+    /**
+     * Method to get the line range of the content between startIndex inclusive and endIndex exclusive
+     * @param startIndex line range inclusive
+     * @param endIndex line range exclusive
+     * @return LineRange object which contains the list of lines in the requested range and the start and end indexes
+     */
+    LineRange getLineRange(int startIndex, int endIndex) ;
+
+    /**
+     * Method to get the line range of the whole content - startIndex = 0 to endIndex = lines.size()
+     * @return LineRange object which contains the list in content with indexes set accordingly
+     */
+    LineRange getLineRangeAll();
+
 }

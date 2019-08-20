@@ -71,4 +71,14 @@ public class TextContent implements DocumentContent {
         }
         this.lineBreak = lineBreak;
     }
+
+    @Override
+    public LineRange getLineRange(int startIndex, int endIndex) {
+        return new LineRange(lines.subList(startIndex, endIndex), startIndex, endIndex);
+    }
+
+    @Override
+    public LineRange getLineRangeAll() {
+        return getLineRange(0, lines.size());
+    }
 }

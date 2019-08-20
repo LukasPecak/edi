@@ -40,14 +40,6 @@ public class LineRangeTest {
         assertThat(startIndex, is(equalTo(0)));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void getStartIndex_shouldThrowIllegalArgumentException_whenStartIndexLessThenZero() {
-        // WHEN try to initialize object
-        new LineRange(Collections.emptyList(), -1, 10);
-
-        // THEN throw exception
-    }
-
     @Test
     public void getEndIndex_shouldReturnRangeEndIndex_whenEndIndexGreaterOrEqualToZero() {
         // GIVEN
@@ -70,22 +62,6 @@ public class LineRangeTest {
 
         // THEN
         assertThat(endIndex, is(equalTo(0)));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void getEndIndex_shouldThrowIllegalArgumentException_whenEndIndexLessThenZero() {
-        // WHEN try to initialize object
-        new LineRange(Collections.emptyList(), 5, -5);
-
-        // THEN throw exception
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void getLines_shouldThrowIllegalArgumentException_whenLinesAreNull() {
-        // WHEN try to initialize object
-        new LineRange(null, 5, 10);
-
-        // THEN throw exception
     }
 
     @Test

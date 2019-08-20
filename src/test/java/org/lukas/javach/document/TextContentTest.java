@@ -783,4 +783,91 @@ public class TextContentTest {
         assertThat(bytes, is(equalTo(text.getBytes())));
     }
 
+    @Test
+    public void getLineRange_shouldReturnLineRangeOfContent_whenLineRangeInTheMiddleOfTheFile() {
+        // GIVEN
+        String text = "First line.\nSecond line.\nThird line.";
+        document = new TextContent(text.getBytes());
+
+        // WHEN
+        LineRange lineRange = document.getLineRange(1, 2);
+
+        // THEN
+        assertThat(lineRange.getLines().size(), is(equalTo(1)));
+        assertThat(lineRange.getStartIndex(), is(equalTo(1)));
+        assertThat(lineRange.getEndIndex(), is(equalTo(2)));
+        assertThat(lineRange.getLines().get(0), is(equalTo("Second line.".getBytes())));
+    }
+
+    @Test
+    public void getLineRange_shouldReturnEmptyLineRangeWithIndexesZero_whenContentIsEmpty() {
+        // GIVEN
+        String content = "";
+        document = new TextContent(content.getBytes());
+
+        // WHEN
+        LineRange lineRange = document.getLineRange(0, 0);
+
+        // THEN
+        assertThat(lineRange.getLines().isEmpty(), is(true));
+        assertThat(lineRange.getStartIndex(), is(equalTo(0)));
+        assertThat(lineRange.getEndIndex(), is(equalTo(0)));
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void getLineRange_shouldThrowIndexOutOfBoundException_whenStartIndexIsLessThenZero() {
+        // GIVEN
+        String content = "";
+        document = new TextContent(content.getBytes());
+
+        // WHEN
+        document.getLineRange(-1, 0);
+
+        // THEN throw exception
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getLineRange_shouldThrowIllegalArgumentException_whenEndIndexIsLessThenStartIndex() {
+        // GIVEN
+        String content = "Something\n";
+        document = new TextContent(content.getBytes());
+
+        // WHEN
+        document.getLineRange(0, -1);
+
+        // THEN throw exception
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void getLineRange_shouldThrowIndexOutOfBoundException_whenEndIndexIsGreaterThanNumberOfLines() {
+        // GIVEN
+        String content = "Something\nNextLine";
+        document = new TextContent(content.getBytes());
+
+        // WHEN
+        document.getLineRange(0, 3);
+
+        // THEN throw exception
+    }
+
+    @Test
+    public void getLineRange_shouldReturnLineRangeOfTheWholeContent_always() {
+        // GIVEN
+        String text = "\nFirst line.\nSecond line.\nThird line.\n";
+        document = new TextContent(text.getBytes());
+
+        // WHEN
+        LineRange lineRange = document.getLineRangeAll();
+
+        // THEN
+        assertThat(lineRange.getLines().size(), is(equalTo(5)));
+        assertThat(lineRange.getStartIndex(), is(equalTo(0)));
+        assertThat(lineRange.getEndIndex(), is(equalTo(5)));
+        assertThat(lineRange.getLines().get(0).length, is(equalTo(0)));
+        assertThat(lineRange.getLines().get(1), is(equalTo("First line.".getBytes())));
+        assertThat(lineRange.getLines().get(2), is(equalTo("Second line.".getBytes())));
+        assertThat(lineRange.getLines().get(3), is(equalTo("Third line.".getBytes())));
+        assertThat(lineRange.getLines().get(4).length, is(equalTo(0)));
+    }
+
 }
