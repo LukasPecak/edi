@@ -7,27 +7,27 @@ import java.util.List;
  *
  * @author Lukas Pecak
  */
-class LineRange {
+public class LineRange {
 
     private int startIndex;
     private int endIndex;
     private List<byte[]> lines;
 
-    LineRange(List<byte[]> lines, int startIndex, int endIndex) {
+    public LineRange(List<byte[]> lines, int startIndex, int endIndex) {
         this.startIndex = startIndex;
         this.endIndex = endIndex;
         this.lines = lines;
     }
 
-    int getStartIndex() {
+    public int getStartIndex() {
         return startIndex;
     }
 
-    int getEndIndex() {
+    public int getEndIndex() {
         return endIndex;
     }
 
-    List<byte[]> getLines() {
+    public List<byte[]> getLines() {
         return lines;
     }
 
