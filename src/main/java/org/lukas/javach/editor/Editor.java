@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
  */
 class Editor {
 
+    private static final byte[] EMPTY_LINE = new byte[0];
+
     private DocumentContent content;
     private LineRange currentLineRange;
 
@@ -74,10 +76,26 @@ class Editor {
     void addLineAtIndex(int index, String newLine) {
         List<byte[]> lines = currentLineRange.getLines();
         List<byte[]> newLines = new ArrayList<>();
-        newLines.addAll(lines.subList(0, index));
-        newLines.addAll(Collections.singletonList(newLine.getBytes()));
-        newLines.addAll(lines.subList(index, lines.size()));
+        int originalNumberOfLines = lines.size();
+        if (index <= originalNumberOfLines) {
+            newLines.addAll(lines.subList(0, index));
+            newLines.add(newLine.getBytes());
+            newLines.addAll(lines.subList(index, originalNumberOfLines));
+        } else {
+            newLines.addAll(lines.subList(0, originalNumberOfLines));
+            for (int i = originalNumberOfLines; i < index; i++) {
+                newLines.add(EMPTY_LINE);
+            }
+            newLines.add(newLine.getBytes());
+        }
 
         currentLineRange = new LineRange(newLines, currentLineRange.getStartIndex(), currentLineRange.getEndIndex());
+    }
+
+    void deleteLineAtIndex(int index) {
+        if (index < 0 || index >= getCurrentLineRange().size()) {
+            throw new IllegalArgumentException("Index cannot be less then zero");
+        }
+        getCurrentLineRange().getLines().remove(index);
     }
 }

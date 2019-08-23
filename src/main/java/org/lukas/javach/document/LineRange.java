@@ -31,4 +31,7 @@ public class LineRange {
         return lines;
     }
 
+    public int size() {
+        return lines.size();
+    }
 }
