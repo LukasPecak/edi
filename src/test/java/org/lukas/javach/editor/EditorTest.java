@@ -459,4 +459,132 @@ public class EditorTest {
         assertThat(lines.isEmpty(), is(true));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void deleteLinesOfRange_shouldThrowIllegalArgumentException_whenGivenFirstIndexIsLessThatZero() {
+        // GIVEN
+        String content = "First line\r\nThe second line\r\nThird line\r\nFourth line";
+        DocumentContent documentContent = contentFactory.createDocumentContent(content.getBytes());
+        editor.openContent(documentContent);
+
+        // WHEN
+        editor.deleteLinesOfRange(-1, 3);
+
+        // THEN expect exception to be thrown
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void deleteLinesOfRange_shouldThrowIllegalArgumentException_whenGivenSecondIndexIsLessThatZero() {
+        // GIVEN
+        String content = "First line\r\nThe second line\r\nThird line\r\nFourth line";
+        DocumentContent documentContent = contentFactory.createDocumentContent(content.getBytes());
+        editor.openContent(documentContent);
+
+        // WHEN
+        editor.deleteLinesOfRange(1, -3);
+
+        // THEN expect exception to be thrown
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void deleteLinesOfRange_shouldThrowIllegalArgumentException_whenSecondIndexGreaterThanFirstIndex() {
+        // GIVEN
+        String content = "First line\r\nThe second line\r\nThird line\r\nFourth line";
+        DocumentContent documentContent = contentFactory.createDocumentContent(content.getBytes());
+        editor.openContent(documentContent);
+
+        // WHEN
+        editor.deleteLinesOfRange(2, 1);
+
+        // THEN expect exception to be thrown
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void deleteLinesOfRange_shouldThrowIllegalArgumentException_whenFirstIndexIsGreaterThanBackingListSize() {
+        // GIVEN
+        String content = "First line\r\nThe second line\r\nThird line\r\nFourth line";
+        DocumentContent documentContent = contentFactory.createDocumentContent(content.getBytes());
+        editor.openContent(documentContent);
+
+        // WHEN
+        editor.deleteLinesOfRange(5, 7);
+
+        // THEN expect exception to be thrown
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void deleteLinesOfRange_shouldThrowIllegalArgumentException_whenSecondIndexIsGreaterThanBackingListSize() {
+        // GIVEN
+        String content = "First line\r\nThe second line\r\nThird line\r\nFourth line";
+        DocumentContent documentContent = contentFactory.createDocumentContent(content.getBytes());
+        editor.openContent(documentContent);
+
+        // WHEN
+        editor.deleteLinesOfRange(2, 7);
+
+        // THEN expect exception to be thrown
+    }
+
+    @Test
+    public void deleteLinesOfRange_shouldDeleteTheSelectedRangeOfLines_whenStartsAtTheBegin() {
+        // GIVEN
+        String content = "First line\r\nThe second line\r\nThird line\r\nFourth line";
+        DocumentContent documentContent = contentFactory.createDocumentContent(content.getBytes());
+        editor.openContent(documentContent);
+
+        // WHEN
+        editor.deleteLinesOfRange(0, 2);
+        List<String> lines = editor.readAllLines();
+
+        // THEN
+        assertThat(lines.get(0), is(equalTo("Third line")));
+        assertThat(lines.get(1), is(equalTo("Fourth line")));
+    }
+
+    @Test
+    public void deleteLinesOfRange_shouldDeleteTheSelectedRangeOfLines_whenEndsAtTheEnd() {
+        // GIVEN
+        String content = "First line\r\nThe second line\r\nThird line\r\nFourth line";
+        DocumentContent documentContent = contentFactory.createDocumentContent(content.getBytes());
+        editor.openContent(documentContent);
+
+        // WHEN
+        editor.deleteLinesOfRange(2, 4);
+        List<String> lines = editor.readAllLines();
+
+        // THEN
+        assertThat(lines.get(0), is(equalTo("First line")));
+        assertThat(lines.get(1), is(equalTo("The second line")));
+    }
+
+    @Test
+    public void deleteLinesOfRange_shouldDeleteTheSelectedRangeOfLines_whenLineInTheMiddleOfLineCollection() {
+        // GIVEN
+        String content = "First line\r\nThe second line\r\nThird line\r\nFourth line";
+        DocumentContent documentContent = contentFactory.createDocumentContent(content.getBytes());
+        editor.openContent(documentContent);
+
+        // WHEN
+        editor.deleteLinesOfRange(1, 3);
+        List<String> lines = editor.readAllLines();
+
+        // THEN
+        assertThat(lines.get(0), is(equalTo("First line")));
+        assertThat(lines.get(1), is(equalTo("Fourth line")));
+    }
+
+    @Test
+    public void deleteLinesOfRange_shouldAllLines_whenSpecifiedRangeOfLinesIsFromZeroToSizeOfLines() {
+        // GIVEN
+        String content = "First line\r\nThe second line\r\nThird line\r\nFourth line";
+        DocumentContent documentContent = contentFactory.createDocumentContent(content.getBytes());
+        editor.openContent(documentContent);
+
+        // WHEN
+        editor.deleteLinesOfRange(0, 4);
+        List<String> lines = editor.readAllLines();
+
+        // THEN
+        assertThat(lines.isEmpty(), is(true));
+    }
+
 }

@@ -5,7 +5,6 @@ import org.lukas.javach.document.LineRange;
 import org.lukas.javach.exception.NoContentOpenException;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -97,5 +96,13 @@ class Editor {
             throw new IllegalArgumentException("Index cannot be less then zero");
         }
         getCurrentLineRange().getLines().remove(index);
+    }
+
+    void deleteLinesOfRange(int startIndex, int endIndex) {
+        int numberOfLines = getCurrentLineRange().size();
+        if (startIndex < 0 || startIndex > endIndex || endIndex > numberOfLines) {
+            throw new IllegalArgumentException("Any index cannot be less than zero");
+        }
+        getCurrentLineRange().getLines().subList(startIndex, endIndex).clear();
     }
 }
