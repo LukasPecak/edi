@@ -13,9 +13,15 @@ public class LineRange {
     private int endIndex;
     private List<byte[]> lines;
 
-    public LineRange(List<byte[]> lines, int startIndex, int endIndex) {
+    LineRange(List<byte[]> lines, int startIndex, int endIndex) {
         this.startIndex = startIndex;
         this.endIndex = endIndex;
+        this.lines = lines;
+    }
+
+    public LineRange(LineRange toCopy, List<byte[]> lines) {
+        this.startIndex = toCopy.startIndex;
+        this.endIndex = toCopy.endIndex;
         this.lines = lines;
     }
 

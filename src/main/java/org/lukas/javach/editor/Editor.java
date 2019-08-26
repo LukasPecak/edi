@@ -73,22 +73,29 @@ class Editor {
     }
 
     void addLineAtIndex(int index, String newLine) {
-        List<byte[]> lines = currentLineRange.getLines();
-        List<byte[]> newLines = new ArrayList<>();
-        int originalNumberOfLines = lines.size();
-        if (index <= originalNumberOfLines) {
-            newLines.addAll(lines.subList(0, index));
-            newLines.add(newLine.getBytes());
-            newLines.addAll(lines.subList(index, originalNumberOfLines));
+        if (index <= currentLineRange.getLines().size()) {
+            currentLineRange = new LineRange(currentLineRange, insertLineInExistingRange(index, newLine));
         } else {
-            newLines.addAll(lines.subList(0, originalNumberOfLines));
-            for (int i = originalNumberOfLines; i < index; i++) {
-                newLines.add(EMPTY_LINE);
-            }
-            newLines.add(newLine.getBytes());
+            currentLineRange = new LineRange(currentLineRange, insertLineOutsideOfTheExistingLineRange(index, newLine));
         }
+    }
 
-        currentLineRange = new LineRange(newLines, currentLineRange.getStartIndex(), currentLineRange.getEndIndex());
+    private List<byte[]> insertLineInExistingRange(int index, String newLine) {
+        List<byte[]> lines = currentLineRange.getLines();
+        List<byte[]> result = new ArrayList<>(lines.subList(0, index));
+        result.add(newLine.getBytes());
+        result.addAll(lines.subList(index, lines.size()));
+        return result;
+    }
+
+    private List<byte[]> insertLineOutsideOfTheExistingLineRange(int index, String newLine) {
+        List<byte[]> lines = currentLineRange.getLines();
+        List<byte[]> result = new ArrayList<>(lines.subList(0, lines.size()));
+        for (int i = lines.size(); i < index; i++) {
+            result.add(EMPTY_LINE);
+        }
+        result.add(newLine.getBytes());
+        return result;
     }
 
     void deleteLineAtIndex(int index) {
