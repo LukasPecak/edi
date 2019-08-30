@@ -13,14 +13,14 @@ import java.util.stream.Collectors;
  *
  * @author Lukas Pecak
  */
-class Editor {
+public class Editor {
 
     private static final byte[] EMPTY_LINE = new byte[0];
 
     private DocumentContent content;
     private LineRange currentLineRange;
 
-    void openContent(DocumentContent content) {
+    public void openContent(DocumentContent content) {
         if (content == null) {
             throw new IllegalArgumentException("The provided content cannot be null");
         }
@@ -28,7 +28,7 @@ class Editor {
         currentLineRange = content.getLineRangeAll();
     }
 
-    String readLine(int lineNumber) {
+    public String readLine(int lineNumber) {
         validateLineNumber(lineNumber);
         currentLineRange = content.getLineRange(lineNumber, lineNumber + 1);
         return new String(currentLineRange.getLines().get(0));
@@ -46,7 +46,7 @@ class Editor {
         }
     }
 
-    List<String> readAllLines() {
+    public List<String> readAllLines() {
         validateContentState();
         return currentLineRange.getLines()
                 .stream()
@@ -60,19 +60,19 @@ class Editor {
         }
     }
 
-    LineRange getCurrentLineRange() {
+    public LineRange getCurrentLineRange() {
         validateContentState();
         return currentLineRange;
     }
 
-    void updateLine(int lineIndex, String line) {
+    public void updateLine(int lineIndex, String line) {
         if (line == null) {
             throw new IllegalArgumentException("The new value of line cannot be null value");
         }
         currentLineRange.getLines().set(lineIndex, line.getBytes());
     }
 
-    void addLineAtIndex(int index, String newLine) {
+    public void addLineAtIndex(int index, String newLine) {
         if (index <= currentLineRange.getLines().size()) {
             currentLineRange = new LineRange(currentLineRange, insertLineInExistingRange(index, newLine));
         } else {
@@ -98,14 +98,14 @@ class Editor {
         return result;
     }
 
-    void deleteLineAtIndex(int index) {
+    public void deleteLineAtIndex(int index) {
         if (index < 0 || index >= getCurrentLineRange().size()) {
             throw new IllegalArgumentException("Index cannot be less then zero");
         }
         getCurrentLineRange().getLines().remove(index);
     }
 
-    void deleteLinesOfRange(int startIndex, int endIndex) {
+    public void deleteLinesOfRange(int startIndex, int endIndex) {
         int numberOfLines = getCurrentLineRange().size();
         if (startIndex < 0 || startIndex > endIndex || endIndex > numberOfLines) {
             throw new IllegalArgumentException("Any index cannot be less than zero");

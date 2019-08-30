@@ -10,7 +10,7 @@ public class TextDocument implements Document {
     private DocumentContent content;
     private DocumentMetadata metadata;
 
-    TextDocument(DocumentContent content, DocumentMetadata metadata) {
+    public TextDocument(DocumentContent content, DocumentMetadata metadata) {
         if (content == null || metadata == null) {
             throw new IllegalArgumentException("Cannot create a document with null content");
         }

@@ -8,6 +8,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -304,6 +306,23 @@ public class DocumentMetadataTest {
                 .setLastAccessTime(Instant.MIN)
                 .setLastModifiedTime(Instant.MIN)
                 .setRegularFile(false);
+    }
+
+    @Test
+    public void empty_shouldReturnEmptyMetadata_always() {
+        // GIVEN setup
+
+        // WHEN
+        DocumentMetadata metadata = DocumentMetadata.EMPTY;
+
+        // THEN
+        assertThat(metadata.getFileName(), is(equalTo("")));
+        assertThat(metadata.getPath(), is(equalTo(Paths.get(""))));
+        assertThat(metadata.getCreationTime(), is(equalTo(Instant.MIN)));
+        assertThat(metadata.getLastModifiedTime(), is(equalTo(Instant.MIN)));
+        assertThat(metadata.getLastAccessTime(), is(equalTo(Instant.MIN)));
+        assertThat(metadata.isRegularFile(), is(false));
+        assertThat(metadata.getSize(), is(equalTo(0L)));
     }
 
 }

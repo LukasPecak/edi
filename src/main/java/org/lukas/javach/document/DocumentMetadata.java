@@ -3,6 +3,7 @@ package org.lukas.javach.document;
 import org.lukas.javach.exception.UnsatisfiedDocumentMetadataException;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 
 /**
@@ -10,9 +11,20 @@ import java.time.Instant;
  *
  * @author Lukas Pecak
  */
-class DocumentMetadata {
+public class DocumentMetadata {
 
-    static class DocumentMetadataBuilder {
+    public static DocumentMetadata EMPTY;
+
+    static{
+        EMPTY = new DocumentMetadata();
+        EMPTY.fileName = "";
+        EMPTY.path = Paths.get("");
+        EMPTY.creationTime = Instant.MIN;
+        EMPTY.lastModifiedTime = Instant.MIN;
+        EMPTY.lastAccessTime = Instant.MIN;
+    }
+
+    public static class DocumentMetadataBuilder {
 
         private String fileName;
         private Path path;
@@ -22,42 +34,42 @@ class DocumentMetadata {
         private long fileSize;
         private boolean regularFile;
 
-        DocumentMetadataBuilder setFileName(String fileName) {
+        public DocumentMetadataBuilder setFileName(String fileName) {
             this.fileName = fileName;
             return this;
         }
 
-        DocumentMetadataBuilder setPath(Path path) {
+        public DocumentMetadataBuilder setPath(Path path) {
             this.path = path;
             return this;
         }
 
-        DocumentMetadataBuilder setLastModifiedTime(Instant lastModifiedTime) {
+        public DocumentMetadataBuilder setLastModifiedTime(Instant lastModifiedTime) {
             this.lastModifiedTime = lastModifiedTime;
             return this;
         }
 
-        DocumentMetadataBuilder setLastAccessTime(Instant lastAccessTime) {
+        public DocumentMetadataBuilder setLastAccessTime(Instant lastAccessTime) {
             this.lastAccessTime = lastAccessTime;
             return this;
         }
 
-        DocumentMetadataBuilder setCreationTime(Instant creationTime) {
+        public DocumentMetadataBuilder setCreationTime(Instant creationTime) {
             this.creationTime = creationTime;
             return this;
         }
 
-        DocumentMetadataBuilder setSize(long fileSize) {
+        public DocumentMetadataBuilder setSize(long fileSize) {
             this.fileSize = fileSize;
             return this;
         }
 
-        DocumentMetadataBuilder setRegularFile(boolean isRegularFile) {
+        public DocumentMetadataBuilder setRegularFile(boolean isRegularFile) {
             this.regularFile = isRegularFile;
             return this;
         }
 
-        DocumentMetadata build() {
+        public DocumentMetadata build() {
             DocumentMetadata metadata = new DocumentMetadata();
 
             metadata.fileName = fileName;
@@ -112,7 +124,7 @@ class DocumentMetadata {
         return path;
     }
 
-    static DocumentMetadataBuilder createBuilder() {
+    public static DocumentMetadataBuilder createBuilder() {
         return new DocumentMetadataBuilder();
     }
 
@@ -134,5 +146,16 @@ class DocumentMetadata {
 
     boolean isRegularFile() {
         return regularFile;
+    }
+
+    @Override
+    public String toString() {
+        return "\tfileName : '" + fileName + '\'' +
+                "\n\tpath : " + path +
+                "\n\tlastModifiedTime : " + lastModifiedTime +
+                "\n\tlastAccessTime : " + lastAccessTime +
+                "\n\tcreationTime : " + creationTime +
+                "\n\tfileSize : " + fileSize +
+                "\n\tregularFile : " + regularFile;
     }
 }

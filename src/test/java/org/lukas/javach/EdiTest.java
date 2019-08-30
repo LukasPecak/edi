@@ -40,11 +40,14 @@ public class EdiTest {
     }
 
     @Test
-    public void returnEmptyArrayOfBytes_whenFileNotFound() {
+    public void returnNull_whenFileNotFoundOrOtherIOException() {
+        // GIVEN
+
+        // WHEN
         byte[] bytes = sut.loadBytes("nonExistingPath");
 
-        assertThat(bytes, is(notNullValue()));
-        assertThat(bytes.length, is(0));
+        // THEN
+        assertThat(bytes, is(nullValue()));
     }
 
     @Test
