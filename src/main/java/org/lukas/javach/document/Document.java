@@ -8,4 +8,11 @@ package org.lukas.javach.document;
 public interface Document {
 
     DocumentContent getContent();
+
+    void setContent(DocumentContent content);
+
+    DocumentMetadata getMetadata();
+
+    void setMetadata(DocumentMetadata metadata);
+
 }
