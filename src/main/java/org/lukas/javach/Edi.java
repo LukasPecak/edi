@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Lukas on 27.07.2019.
@@ -57,12 +58,70 @@ class Edi {
             document = new TextDocument(content, metadata);
         }
 
-        System.out.println("[---METADATA---]");
-        System.out.println(document.getMetadata());
-        System.out.println("\n[---CONTENT----]");
         Editor editor = new Editor();
         editor.openContent(document.getContent());
-        editor.readAllLines().forEach(System.out::println);
+
+        Scanner scanner = new Scanner(System.in).useDelimiter("\n");
+        boolean shutdownRequest = false;
+        while(!shutdownRequest) {
+            displayCommands();
+            String command = scanner.next();
+            switch(command) {
+                case "1":
+                    System.out.println("[---METADATA---]");
+                    System.out.println(document.getMetadata());
+                    System.out.println("\n[---CONTENT----]");
+                    AtomicInteger lineNumber = new AtomicInteger(0);
+                    editor.readAllLines().stream()
+                            .map(l -> String.format("%2d: %s", lineNumber.getAndIncrement(), l))
+                            .forEach(System.out::println);
+                    break;
+                case "2":
+                    System.out.println("\n[---EDIT LINE---]");
+                    System.out.println("\nType line number: ");
+                    int lineToUpdate = scanner.nextInt();
+                    if (!(lineToUpdate >= 0 && lineToUpdate < editor.getCurrentLineRange().size())) {
+                        System.out.println("ERROR:  Line number outside of content range");
+                        break;
+                    }
+                    System.out.println("\nOld line value: ");
+                    System.out.println(editor.readLine(lineToUpdate));
+                    System.out.println("\nNew line value: ");
+                    String newLine = scanner.next();
+                    editor.updateLine(lineToUpdate, newLine);
+                    break;
+                case "3":
+                    System.out.println("\n[---DELETE LINE---]");
+                    System.out.println("\nType line number: ");
+                    int lineToDelete = scanner.nextInt();
+                    if (!(lineToDelete >= 0 && lineToDelete < editor.getCurrentLineRange().size())) {
+                        System.out.println("ERROR:  Line number outside of content range");
+                        break;
+                    }
+                    System.out.println("\nDo you realy want to delete this line [yes/no]: " + lineToDelete + ": " + editor.readLine(lineToDelete));
+                    String decision = scanner.next();
+                    if ("yes".equals(decision)) {
+                        editor.deleteLineAtIndex(lineToDelete);
+                        System.out.println("Line deleted");
+                    }
+
+                    break;
+                case "4":
+                    scanner.close();
+                    shutdownRequest = true;
+                default:
+
+            }
+        }
+    }
+
+    private static void displayCommands() {
+        String help = "\n[------COMMANDS------]" +
+                "\n\t1 : readAllLines" +
+                "\n\t2 : editLine" +
+                "\n\t3 : deleteLine" +
+                "\n\t4 : exit\n";
+        System.out.println(help);
     }
 
     byte[] loadBytes(String pathString) {

@@ -30,8 +30,7 @@ public class Editor {
 
     public String readLine(int lineNumber) {
         validateLineNumber(lineNumber);
-        currentLineRange = content.getLineRange(lineNumber, lineNumber + 1);
-        return new String(currentLineRange.getLines().get(0));
+        return new String(currentLineRange.getLines().get(lineNumber));
     }
 
     private void validateLineNumber(int lineNumber) {

@@ -1,0 +1,13 @@
+1. Which part of the software should be tested?
+
+What should be tested is a highly controversial topic. Some developers believe every statement in your code should be
+tested. In any case you should write software tests for the critical and complex parts of your application. If you
+introduce new features a solid test suite also protects you against regression in existing code. In general it it safe
+to ignore trivial code. For example, it is typical useless to write tests for getter and setter methods which simply
+assign values to fields. Writing tests for these statements is time consuming and pointless, as you would be testing
+the Java virtual machine. The JVM itself already has test cases for this. If you are developing end user applications
+you are safe to assume that a field assignment works in Java.
+
+If you start developing tests for an existing code base without any tests, it is good practice to start writing tests
+for code in which most of the errors happened in the past. This way you can focus on the critical parts of your
+application.
