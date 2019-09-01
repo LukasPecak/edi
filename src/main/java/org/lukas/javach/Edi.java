@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -79,38 +80,64 @@ class Edi {
                 case "2":
                     System.out.println("\n[---EDIT LINE---]");
                     System.out.println("\nType line number: ");
-                    int lineToUpdate = scanner.nextInt();
-                    if (!(lineToUpdate >= 0 && lineToUpdate < editor.getCurrentLineRange().size())) {
-                        System.out.println("ERROR:  Line number outside of content range");
-                        break;
+                    try {
+                        int lineToUpdate = scanner.nextInt();
+                        if (!(lineToUpdate >= 0 && lineToUpdate < editor.getCurrentLineRange().size())) {
+                            System.out.println("ERROR:  Line number outside of content range");
+                            break;
+                        }
+                        System.out.println("\nOld line value: ");
+                        System.out.println(editor.readLine(lineToUpdate));
+                        System.out.println("\nNew line value: ");
+                        String newLine = scanner.next();
+                        editor.updateLine(lineToUpdate, newLine);
+                    } catch(InputMismatchException e) {
+                        LOG.error("Input is in wrong format. Please use integer line number in range");
                     }
-                    System.out.println("\nOld line value: ");
-                    System.out.println(editor.readLine(lineToUpdate));
-                    System.out.println("\nNew line value: ");
-                    String newLine = scanner.next();
-                    editor.updateLine(lineToUpdate, newLine);
                     break;
                 case "3":
                     System.out.println("\n[---DELETE LINE---]");
                     System.out.println("\nType line number: ");
-                    int lineToDelete = scanner.nextInt();
-                    if (!(lineToDelete >= 0 && lineToDelete < editor.getCurrentLineRange().size())) {
-                        System.out.println("ERROR:  Line number outside of content range");
-                        break;
+                    try {
+                        int lineToDelete = scanner.nextInt();
+                        if (!(lineToDelete >= 0 && lineToDelete < editor.getCurrentLineRange().size())) {
+                            System.out.println("ERROR:  Line number outside of content range");
+                            break;
+                        }
+                        System.out.println("\nDo you realy want to delete this line [yes/no]: " + lineToDelete + ": " + editor.readLine(lineToDelete));
+                        String decision = scanner.next();
+                        if ("yes".equals(decision)) {
+                            editor.deleteLineAtIndex(lineToDelete);
+                            System.out.println("Line deleted");
+                        }
+                    } catch(InputMismatchException e) {
+                        LOG.error("Input is in wrong format. Please use integer line number in range");
                     }
-                    System.out.println("\nDo you realy want to delete this line [yes/no]: " + lineToDelete + ": " + editor.readLine(lineToDelete));
-                    String decision = scanner.next();
-                    if ("yes".equals(decision)) {
-                        editor.deleteLineAtIndex(lineToDelete);
-                        System.out.println("Line deleted");
-                    }
-
                     break;
                 case "4":
+                    System.out.println("\n[---ADD NEW LINE---]");
+                    System.out.println("\nType position to add a new line: ");
+                    try {
+                        int lineToAdd = scanner.nextInt();
+                        if (lineToAdd < 0) {
+                            System.out.println("ERROR:  Line number outside of content range");
+                            break;
+                        }
+                        System.out.println("\nNew line value: ");
+                        String newLine = scanner.next();
+                        editor.addLineAtIndex(lineToAdd, newLine);
+                    } catch(InputMismatchException e) {
+                        LOG.error("Input is in wrong format. Please use integer line number in range");
+                    }
+                    break;
+                case "5":
+                    throw new UnsupportedOperationException("Not supported yet");
+                case "6":
                     scanner.close();
                     shutdownRequest = true;
+                    break;
                 default:
-
+                    LOG.error("Command [{}] not found", command);
             }
         }
     }
@@ -120,7 +147,9 @@ class Edi {
                 "\n\t1 : readAllLines" +
                 "\n\t2 : editLine" +
                 "\n\t3 : deleteLine" +
-                "\n\t4 : exit\n";
+                "\n\t4 : addNewLine" +
+                "\n\t5 : save" +
+                "\n\t6 : exit\n";
         System.out.println(help);
     }
 
