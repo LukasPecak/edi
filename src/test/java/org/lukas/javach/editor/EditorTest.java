@@ -1,11 +1,9 @@
 package org.lukas.javach.editor;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.lukas.javach.document.DocumentContent;
-import org.lukas.javach.document.DocumentContentFactory;
-import org.lukas.javach.document.DocumentContentFactoryImpl;
-import org.lukas.javach.document.LineRange;
+import org.lukas.javach.document.*;
 import org.lukas.javach.exception.NoContentOpenException;
 
 import java.util.List;
@@ -585,6 +583,42 @@ public class EditorTest {
 
         // THEN
         assertThat(lines.isEmpty(), is(true));
+    }
+
+    @Ignore
+    @Test(expected = IllegalStateException.class)
+    public void saveChanges_shouldThrowIllegalStateException_whenContentIsNullValue() {
+        // GIVEN
+        editor = new Editor();
+
+        // WHEN
+        editor.saveChanges();
+
+        // THEN throw exception
+    }
+
+    @Ignore
+    @Test
+    public void saveChanges_shouldSaveChangesToContent_whenContentIsNotNullValue() {
+        // GIVEN
+        editor = new Editor();
+        String contentText = "First line.\nThen the second line.\n\nFinally the last forth line.";
+        DocumentContent content = contentFactory.createDocumentContent(contentText.getBytes());
+        editor.openContent(content);
+
+        // WHEN
+        editor.deleteLineAtIndex(3);
+        editor.updateLine(2, "Finally the last third line.");
+        editor.addLineAtIndex(4, "The very last fifth line.");
+        editor.saveChanges();
+
+        // THEN throw exception
+        assertThat(content.getLines().size(), is(equalTo(5)));
+        assertThat(content.getLines().get(0), is(equalTo("First line.".getBytes())));
+        assertThat(content.getLines().get(1), is(equalTo("Then the second line.".getBytes())));
+        assertThat(content.getLines().get(2), is(equalTo("Finally the last third line.".getBytes())));
+        assertThat(content.getLines().get(3), is(equalTo("".getBytes())));
+        assertThat(content.getLines().get(4), is(equalTo("The very last fifth line.".getBytes())));
     }
 
 }

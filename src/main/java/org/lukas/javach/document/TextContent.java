@@ -1,7 +1,10 @@
 package org.lukas.javach.document;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.lukas.javach.document.LineBreak.isKnownLineBreak;
@@ -14,7 +17,7 @@ import static org.lukas.javach.document.LineBreak.resolveLineBreak;
  */
 public class TextContent implements DocumentContent {
 
-    private final List<byte[]> lines;
+    private List<byte[]> lines;
     private LineBreak lineBreak;
 
     TextContent(byte[] bytes) {
@@ -80,5 +83,17 @@ public class TextContent implements DocumentContent {
     @Override
     public LineRange getLineRangeAll() {
         return getLineRange(0, lines.size());
+    }
+
+    @Override
+    public void setLineRange(LineRange lineRange) {
+        if (lineRange.getLines() == null) {
+            throw new IllegalArgumentException("Cannot set lineRang with null value lines");
+        }
+        List<byte[]> resultLines = new ArrayList<>(lines.size() + lineRange.size());
+        resultLines.addAll(lines.subList(0, lineRange.getStartIndex()));
+        resultLines.addAll(lineRange.getLines());
+        resultLines.addAll(lines.subList(lineRange.getEndIndex(), lines.size()));
+        lines = resultLines;
     }
 }

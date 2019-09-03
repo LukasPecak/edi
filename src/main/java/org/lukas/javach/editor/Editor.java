@@ -111,4 +111,9 @@ public class Editor {
         }
         getCurrentLineRange().getLines().subList(startIndex, endIndex).clear();
     }
+
+    public void saveChanges() {
+        content.setLineRange(currentLineRange);
+        throw new IllegalStateException("Cannot save changes when content ist null");
+    }
 }

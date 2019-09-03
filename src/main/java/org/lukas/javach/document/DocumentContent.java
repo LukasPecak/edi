@@ -52,4 +52,9 @@ public interface DocumentContent {
      */
     LineRange getLineRangeAll();
 
+    /**
+     * Method to set the LineRang that was edited
+     * @param lineRange
+     */
+    void setLineRange(LineRange lineRange);
 }

@@ -3,7 +3,10 @@ package org.lukas.javach.document;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -17,24 +20,24 @@ import static org.lukas.javach.document.LineBreak.*;
  */
 public class TextContentTest {
 
-    private TextContent document;
+    private TextContent sut;
 
     @Before
     public void setupTests() {
-        document = new TextContent(new byte[0]);
+        sut = new TextContent(new byte[0]);
     }
 
     @Test
     public void documentShouldProvideTheFileAsByteArray() {
-        document.getBytes();
+        sut.getBytes();
     }
 
     @Test
     public void document_shouldReturnTeSameArrayOfBytesAsInitializedWith_whenNoActionOnTheDataWerePerformed() {
         String data = "This is a sample text";
-        document = new TextContent(data.getBytes());
+        sut = new TextContent(data.getBytes());
 
-        assertThat(document.getBytes(), is(equalTo(data.getBytes())));
+        assertThat(sut.getBytes(), is(equalTo(data.getBytes())));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -46,10 +49,10 @@ public class TextContentTest {
     public void getLineBreak_shouldReturnTheLineBreakUsedInTheDocument_whenDocumentHasMultipleLines() {
         // GIVEN
         String windowsLineBreak = "\r\n";
-        document = new TextContent(("This is the first line" + windowsLineBreak + "This is the second line").getBytes());
+        sut = new TextContent(("This is the first line" + windowsLineBreak + "This is the second line").getBytes());
 
         // WHEN
-        LineBreak lineBreak = document.getLineBreak();
+        LineBreak lineBreak = sut.getLineBreak();
 
         // THEN
         assertThat(lineBreak, is(equalTo(LineBreak.WINDOWS_LINE_BREAK)));
@@ -61,7 +64,7 @@ public class TextContentTest {
         byte[] systemLineBreak = System.lineSeparator().getBytes();
 
         // WHEN
-        LineBreak lineBreak = document.getLineBreak();
+        LineBreak lineBreak = sut.getLineBreak();
 
         // THEN
         assertThat(lineBreak.getBytes(), is(equalTo(systemLineBreak)));
@@ -70,11 +73,11 @@ public class TextContentTest {
     @Test
     public void getLineLineBreak_shouldReturnTheSystemDefaultLineLineBreak_whenDocumentHasOnlyOneLine() {
         // GIVEN
-        document = new TextContent("One line test only. Without line lineBreak".getBytes());
+        sut = new TextContent("One line test only. Without line lineBreak".getBytes());
         byte[] systemLineBreak = System.lineSeparator().getBytes();
 
         // WHEN
-        LineBreak lineBreak = document.getLineBreak();
+        LineBreak lineBreak = sut.getLineBreak();
 
         // THEN
         assertThat(lineBreak.getBytes(), is(equalTo(systemLineBreak)));
@@ -84,10 +87,10 @@ public class TextContentTest {
     public void getLineLineBreak_shouldReturnTheUnixLineLineBreak_whenDocumentHasMultipleLinesAndUnixFormatting() {
         // GIVEN
         String unixLineBreak = "\n";
-        document = new TextContent(("This is the first line" + unixLineBreak + "This is the second line").getBytes());
+        sut = new TextContent(("This is the first line" + unixLineBreak + "This is the second line").getBytes());
 
         // WHEN
-        LineBreak lineBreak = document.getLineBreak();
+        LineBreak lineBreak = sut.getLineBreak();
 
         // THEN
         assertThat(lineBreak, is(equalTo(UNIX_LINE_BREAK)));
@@ -97,10 +100,10 @@ public class TextContentTest {
     public void getLineLineBreak_shouldReturnTheUnixLineLineBreak_whenDocumentEndsWithLineFeed() {
         // GIVEN
         String unixLineBreak = "\n";
-        document = new TextContent(("This is the first line" + unixLineBreak).getBytes());
+        sut = new TextContent(("This is the first line" + unixLineBreak).getBytes());
 
         // WHEN
-        LineBreak lineBreak = document.getLineBreak();
+        LineBreak lineBreak = sut.getLineBreak();
 
         // THEN
         assertThat(lineBreak, is(equalTo(UNIX_LINE_BREAK)));
@@ -110,10 +113,10 @@ public class TextContentTest {
     public void getLineBreak_shouldReturnTheOldMacLineBreak_whenDocumentEndsWithCarriageReturn() {
         // GIVEN
         String oldMacLineBreak = "\r";
-        document = new TextContent(("This is the first line" + oldMacLineBreak).getBytes());
+        sut = new TextContent(("This is the first line" + oldMacLineBreak).getBytes());
 
         // WHEN
-        LineBreak lineBreak = document.getLineBreak();
+        LineBreak lineBreak = sut.getLineBreak();
 
         // THEN
         assertThat(lineBreak, is(equalTo(OLD_MAC_LINE_BREAK)));
@@ -123,10 +126,10 @@ public class TextContentTest {
     public void getLineBreak_shouldReturnTheWindowsLineBreak_whenDocumentEndsWithCarriageReturnPlusLineFeed() {
         // GIVEN
         String windowsLineBreak = "\r\n";
-        document = new TextContent(("This is the first line" + windowsLineBreak).getBytes());
+        sut = new TextContent(("This is the first line" + windowsLineBreak).getBytes());
 
         // WHEN
-        LineBreak lineBreak = document.getLineBreak();
+        LineBreak lineBreak = sut.getLineBreak();
 
         // THEN
         assertThat(lineBreak, is(equalTo(WINDOWS_LINE_BREAK)));
@@ -136,10 +139,10 @@ public class TextContentTest {
     public void getLineBreak_shouldReturnTheOldMacLineBreak_whenDocumentHasMultipleLinesAndOldMacFormatting() {
         // GIVEN
         String oldMacLineBreak = "\r";
-        document = new TextContent(("This is the first line" + oldMacLineBreak + "This is the second line").getBytes());
+        sut = new TextContent(("This is the first line" + oldMacLineBreak + "This is the second line").getBytes());
 
         // WHEN
-        LineBreak lineBreak = document.getLineBreak();
+        LineBreak lineBreak = sut.getLineBreak();
 
         // THEN
         assertThat(lineBreak, is(equalTo(OLD_MAC_LINE_BREAK)));
@@ -149,10 +152,10 @@ public class TextContentTest {
     public void getLineBreak_shouldReturnUnixLineBreak_whenDocumentHasOnlyMultipleUnixLineBreaks() {
         // GIVEN
         String unixLineBreak = "\n";
-        document = new TextContent((unixLineBreak + unixLineBreak + unixLineBreak).getBytes());
+        sut = new TextContent((unixLineBreak + unixLineBreak + unixLineBreak).getBytes());
 
         // WHEN
-        LineBreak lineBreak = document.getLineBreak();
+        LineBreak lineBreak = sut.getLineBreak();
 
         // THEN
         assertThat(lineBreak, is(equalTo(UNIX_LINE_BREAK)));
@@ -162,10 +165,10 @@ public class TextContentTest {
     public void getLineBreak_shouldReturnOldMacLineBreak_whenDocumentHasOnlyMultipleOldMacLineBreaks() {
         // GIVEN
         String oldMacLineBreak = "\r";
-        document = new TextContent((oldMacLineBreak + oldMacLineBreak + oldMacLineBreak).getBytes());
+        sut = new TextContent((oldMacLineBreak + oldMacLineBreak + oldMacLineBreak).getBytes());
 
         // WHEN
-        LineBreak lineBreak = document.getLineBreak();
+        LineBreak lineBreak = sut.getLineBreak();
 
         // THEN
         assertThat(lineBreak, is(equalTo(OLD_MAC_LINE_BREAK)));
@@ -175,10 +178,10 @@ public class TextContentTest {
     public void getLineBreak_shouldReturnWindowsLineBreak_whenDocumentHasOnlyMultipleWindowsLineBreaks() {
         // GIVEN
         String windowsLineBreak = "\r\n";
-        document = new TextContent((windowsLineBreak + windowsLineBreak + windowsLineBreak).getBytes());
+        sut = new TextContent((windowsLineBreak + windowsLineBreak + windowsLineBreak).getBytes());
 
         // WHEN
-        LineBreak lineBreak = document.getLineBreak();
+        LineBreak lineBreak = sut.getLineBreak();
 
         // THEN
         assertThat(lineBreak, is(equalTo(WINDOWS_LINE_BREAK)));
@@ -189,7 +192,7 @@ public class TextContentTest {
         // GIVEN Setup
 
         // WHEN
-        document.setLineBreak(null);
+        sut.setLineBreak(null);
         // THEN EXPECT EXCEPTION TO BE THROWN
     }
 
@@ -198,7 +201,7 @@ public class TextContentTest {
         // GIVEN Setup
 
         // WHEN
-        document.setLineBreak(UNDEFINED_LINE_BREAK);
+        sut.setLineBreak(UNDEFINED_LINE_BREAK);
         // THEN EXPECT EXCEPTION TO BE THROWN
     }
 
@@ -207,10 +210,10 @@ public class TextContentTest {
         // GIVEN Setup
 
         // WHEN
-        document.setLineBreak(WINDOWS_LINE_BREAK);
+        sut.setLineBreak(WINDOWS_LINE_BREAK);
 
         // THEN
-        assertThat(document.getLineBreak(), is(equalTo(WINDOWS_LINE_BREAK)));
+        assertThat(sut.getLineBreak(), is(equalTo(WINDOWS_LINE_BREAK)));
     }
 
     @Test
@@ -218,10 +221,10 @@ public class TextContentTest {
         // GIVEN Setup
 
         // WHEN
-        document.setLineBreak(UNIX_LINE_BREAK);
+        sut.setLineBreak(UNIX_LINE_BREAK);
 
         // THEN
-        assertThat(document.getLineBreak(), is(equalTo(UNIX_LINE_BREAK)));
+        assertThat(sut.getLineBreak(), is(equalTo(UNIX_LINE_BREAK)));
     }
 
     @Test
@@ -229,20 +232,20 @@ public class TextContentTest {
         // GIVEN Setup
 
         // WHEN
-        document.setLineBreak(OLD_MAC_LINE_BREAK);
+        sut.setLineBreak(OLD_MAC_LINE_BREAK);
 
         // THEN
-        assertThat(document.getLineBreak(), is(equalTo(OLD_MAC_LINE_BREAK)));
+        assertThat(sut.getLineBreak(), is(equalTo(OLD_MAC_LINE_BREAK)));
     }
 
     @Test
     public void getNumberOfLines_shouldReturnCountEqualToZeroInEmptyDocument_always() {
         // GIVEN
         String text = "";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        int numberOfLines = document.getNumberOfLines();
+        int numberOfLines = sut.getNumberOfLines();
 
         // THEN
         assertThat(numberOfLines, is(equalTo(0)));
@@ -252,10 +255,10 @@ public class TextContentTest {
     public void getNumberOfLines_shouldReturnCountEqualToOneInNonEmptyDocumentWithOneLine_always() {
         // GIVEN
         String text = "One line";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        int numberOfLines = document.getNumberOfLines();
+        int numberOfLines = sut.getNumberOfLines();
 
         // THEN
         assertThat(numberOfLines, is(equalTo(1)));
@@ -265,10 +268,10 @@ public class TextContentTest {
     public void getNumberOfLines_shouldReturnCountOfLinesInDocumentSeparatedWithWindowsLineBreak_always() {
         // GIVEN
         String text = "The first line\r\nThe second line\r\nThe third line";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        int numberOfLines = document.getNumberOfLines();
+        int numberOfLines = sut.getNumberOfLines();
 
         // THEN
         assertThat(numberOfLines, is(equalTo(3)));
@@ -278,10 +281,10 @@ public class TextContentTest {
     public void getNumberOfLines_shouldReturnCountOfLinesInDocumentSeparatedWithUnixLineBreak_always() {
         // GIVEN
         String text = "The first line\nThe second line\nThe third line";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        int numberOfLines = document.getNumberOfLines();
+        int numberOfLines = sut.getNumberOfLines();
 
         // THEN
         assertThat(numberOfLines, is(equalTo(3)));
@@ -291,10 +294,10 @@ public class TextContentTest {
     public void getNumberOfLines_shouldReturnCountOfLinesInDocumentSeparatedWithOldMacLineBreak_always() {
         // GIVEN
         String text = "The first line\rThe second line\rThe third line";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        int numberOfLines = document.getNumberOfLines();
+        int numberOfLines = sut.getNumberOfLines();
 
         // THEN
         assertThat(numberOfLines, is(equalTo(3)));
@@ -304,10 +307,10 @@ public class TextContentTest {
     public void getNumberOfLines_shouldReturnCountOfLinesPlusOne_whenDocumentEndsWithWindowsLineBreak() {
         // GIVEN
         String text = "The first line\r\nThe second line\r\nThe third line\r\n";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        int numberOfLines = document.getNumberOfLines();
+        int numberOfLines = sut.getNumberOfLines();
 
         // THEN
         assertThat(numberOfLines, is(equalTo(4)));
@@ -317,10 +320,10 @@ public class TextContentTest {
     public void getNumberOfLines_shouldReturnCountOfLinesPlusOne_whenDocumentEndsWithUnixLineBreak() {
         // GIVEN
         String text = "The first line\nThe second line\nThe third line\n";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        int numberOfLines = document.getNumberOfLines();
+        int numberOfLines = sut.getNumberOfLines();
 
         // THEN
         assertThat(numberOfLines, is(equalTo(4)));
@@ -330,10 +333,10 @@ public class TextContentTest {
     public void getNumberOfLines_shouldReturnCountOfLinesPlusOne_whenDocumentEndsWithOldMacLineBreak() {
         // GIVEN
         String text = "The first line\rThe second line\rThe third line\r";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        int numberOfLines = document.getNumberOfLines();
+        int numberOfLines = sut.getNumberOfLines();
 
         // THEN
         assertThat(numberOfLines, is(equalTo(4)));
@@ -343,10 +346,10 @@ public class TextContentTest {
     public void getNumberOfLines_shouldReturnFour_whenDocumentContainsOnlyThreeWindowsLineBreak() {
         // GIVEN
         String text = "\r\n\r\n\r\n";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        int numberOfLines = document.getNumberOfLines();
+        int numberOfLines = sut.getNumberOfLines();
 
         // THEN
         assertThat(numberOfLines, is(equalTo(4)));
@@ -356,10 +359,10 @@ public class TextContentTest {
     public void getNumberOfLines_shouldReturnFour_whenDocumentContainsOnlyThreeUnixLineBreak() {
         // GIVEN
         String text = "\n\n\n";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        int numberOfLines = document.getNumberOfLines();
+        int numberOfLines = sut.getNumberOfLines();
 
         // THEN
         assertThat(numberOfLines, is(equalTo(4)));
@@ -369,10 +372,10 @@ public class TextContentTest {
     public void getNumberOfLines_shouldReturnFour_whenDocumentContainsOnlyThreeOldMacLineBreak() {
         // GIVEN
         String text = "\r\r\r";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        int numberOfLines = document.getNumberOfLines();
+        int numberOfLines = sut.getNumberOfLines();
 
         // THEN
         assertThat(numberOfLines, is(equalTo(4)));
@@ -382,10 +385,10 @@ public class TextContentTest {
     public void getLines_shouldReturnEmptyList_whenFileContentIsEmpty() {
         // GIVEN
         String text = "";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        List<byte[]> lines = document.getLines();
+        List<byte[]> lines = sut.getLines();
 
         // THEN
         assertThat(lines.isEmpty(), is(true));
@@ -395,10 +398,10 @@ public class TextContentTest {
     public void getLines_shouldReturnListOfOneElementAndContainingTheLine_whenFileContentHasContentButNoLinebreak() {
         // GIVEN
         String text = "Some content";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        List<byte[]> lines = document.getLines();
+        List<byte[]> lines = sut.getLines();
 
         // THEN
         assertThat(lines.size(), is(1));
@@ -409,10 +412,10 @@ public class TextContentTest {
     public void getLines_shouldReturnListWithTwoEmptyLines_whenFileContentIsOnlyUnixLineBrakeSymbols() {
         // GIVEN
         String text = "\n";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        List<byte[]> lines = document.getLines();
+        List<byte[]> lines = sut.getLines();
 
         // THEN
         assertThat(lines.size(), is(2));
@@ -424,10 +427,10 @@ public class TextContentTest {
     public void getLines_shouldReturnListWithTwoEmptyLines_whenFileContentIsOnlyOldMacLineBrakeSymbols() {
         // GIVEN
         String text = "\r";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        List<byte[]> lines = document.getLines();
+        List<byte[]> lines = sut.getLines();
 
         // THEN
         assertThat(lines.size(), is(2));
@@ -439,10 +442,10 @@ public class TextContentTest {
     public void getLines_shouldReturnListWithTwoEmptyLines_whenFileContentIsOnlyWindowsLineBrakeSymbols() {
         // GIVEN
         String text = "\r\n";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        List<byte[]> lines = document.getLines();
+        List<byte[]> lines = sut.getLines();
 
         // THEN
         assertThat(lines.size(), is(2));
@@ -454,10 +457,10 @@ public class TextContentTest {
     public void getLines_shouldReturnListWithTwoLines_whenFileContentIsUnixLineBrakePlusText() {
         // GIVEN
         String text = "\nThe second Line";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        List<byte[]> lines = document.getLines();
+        List<byte[]> lines = sut.getLines();
 
         // THEN
         assertThat(lines.size(), is(2));
@@ -469,10 +472,10 @@ public class TextContentTest {
     public void getLines_shouldReturnListWithTwoLines_whenFileContentIsOldMacLineBrakePlusText() {
         // GIVEN
         String text = "\rThe second Line";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        List<byte[]> lines = document.getLines();
+        List<byte[]> lines = sut.getLines();
 
         // THEN
         assertThat(lines.size(), is(2));
@@ -484,10 +487,10 @@ public class TextContentTest {
     public void getLines_shouldReturnListWithTwoLines_whenFileContentIsWindowsLineBrakePlusText() {
         // GIVEN
         String text = "\r\nThe second Line";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        List<byte[]> lines = document.getLines();
+        List<byte[]> lines = sut.getLines();
 
         // THEN
         assertThat(lines.size(), is(2));
@@ -499,10 +502,10 @@ public class TextContentTest {
     public void getLines_shouldReturnListWithTwoLines_whenFileContentIsTextPlusUnixLineBrake() {
         // GIVEN
         String text = "The second Line\n";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        List<byte[]> lines = document.getLines();
+        List<byte[]> lines = sut.getLines();
 
         // THEN
         assertThat(lines.size(), is(2));
@@ -514,10 +517,10 @@ public class TextContentTest {
     public void getLines_shouldReturnListWithTwoLines_whenFileContentIsTextPlusOldMacLineBrake() {
         // GIVEN
         String text = "The second Line\r";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        List<byte[]> lines = document.getLines();
+        List<byte[]> lines = sut.getLines();
 
         // THEN
         assertThat(lines.size(), is(2));
@@ -529,10 +532,10 @@ public class TextContentTest {
     public void getLines_shouldReturnListWithTwoLines_whenFileContentIsTextPlusWindowsLineBrake() {
         // GIVEN
         String text = "The second Line\r\n";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        List<byte[]> lines = document.getLines();
+        List<byte[]> lines = sut.getLines();
 
         // THEN
         assertThat(lines.size(), is(2));
@@ -544,10 +547,10 @@ public class TextContentTest {
     public void getLines_shouldReturnListOfBytesRepresentingLines_whenFileContentHasMultipleLinesAndUnixLineBreak() {
         // GIVEN
         String text = "The first line\nThe second line\nThe third line";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        List<byte[]> lines = document.getLines();
+        List<byte[]> lines = sut.getLines();
 
         // THEN
         assertThat(lines.size(), is(3));
@@ -560,10 +563,10 @@ public class TextContentTest {
     public void getLines_shouldReturnListOfBytesRepresentingLines_whenFileContentHasMultipleLinesAndOldMacLineBreak() {
         // GIVEN
         String text = "The first line\rThe second line\rThe third line";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        List<byte[]> lines = document.getLines();
+        List<byte[]> lines = sut.getLines();
 
         // THEN
         assertThat(lines.size(), is(3));
@@ -576,10 +579,10 @@ public class TextContentTest {
     public void getLines_shouldReturnListOfBytesRepresentingLines_whenFileContentHasMultipleLinesAndWindowsLineBreak() {
         // GIVEN
         String text = "The first line\r\nThe second line\r\nThe third line";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        List<byte[]> lines = document.getLines();
+        List<byte[]> lines = sut.getLines();
 
         // THEN
         assertThat(lines.size(), is(3));
@@ -592,10 +595,10 @@ public class TextContentTest {
     public void getLines_shouldReturnFourEmptyLines_whenFileContainsOnlyThreeUnixLineBreaks() {
         // GIVEN
         String text = "\n\n\n";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        List<byte[]> lines = document.getLines();
+        List<byte[]> lines = sut.getLines();
 
         // THEN
         assertThat(lines.size(), is(4));
@@ -609,10 +612,10 @@ public class TextContentTest {
     public void getLines_shouldReturnFourEmptyLines_whenFileContainsOnlyThreeOldMacLineBreaks() {
         // GIVEN
         String text = "\r\r\r";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        List<byte[]> lines = document.getLines();
+        List<byte[]> lines = sut.getLines();
 
         // THEN
         assertThat(lines.size(), is(4));
@@ -626,10 +629,10 @@ public class TextContentTest {
     public void getLines_shouldReturnFourEmptyLines_whenFileContainsOnlyThreeWindowsLineBreaks() {
         // GIVEN
         String text = "\r\n\r\n\r\n";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        List<byte[]> lines = document.getLines();
+        List<byte[]> lines = sut.getLines();
 
         // THEN
         assertThat(lines.size(), is(4));
@@ -643,10 +646,10 @@ public class TextContentTest {
     public void getLines_shouldReturnFourEmptyLines_whenFileContainsThreeUnixLineBreaksAndText() {
         // GIVEN
         String text = "\n\ntext\n";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        List<byte[]> lines = document.getLines();
+        List<byte[]> lines = sut.getLines();
 
         // THEN
         assertThat(lines.size(), is(4));
@@ -660,10 +663,10 @@ public class TextContentTest {
     public void getLines_shouldReturnFourEmptyLines_whenFileContainsThreeOldMacLineBreaksAndText() {
         // GIVEN
         String text = "\r\rtext\r";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        List<byte[]> lines = document.getLines();
+        List<byte[]> lines = sut.getLines();
 
         // THEN
         assertThat(lines.size(), is(4));
@@ -677,10 +680,10 @@ public class TextContentTest {
     public void getLines_shouldReturnFourEmptyLines_whenFileContainsThreeWindowsLineBreaksAndText() {
         // GIVEN
         String text = "\r\n\r\ntext\r\n";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        List<byte[]> lines = document.getLines();
+        List<byte[]> lines = sut.getLines();
 
         // THEN
         assertThat(lines.size(), is(4));
@@ -694,10 +697,10 @@ public class TextContentTest {
     public void getBytes_shouldReturnLinesOfBytesSeparatedByWindowsLineBreak_whenWindowsLineBreakIsSet() {
         // GIVEN
         String text = "First line.\r\nSecond line.\r\nThird line.";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        byte[] bytes = document.getBytes();
+        byte[] bytes = sut.getBytes();
 
         // THEN
         assertThat(bytes, is(equalTo(text.getBytes())));
@@ -707,10 +710,10 @@ public class TextContentTest {
     public void getBytes_shouldReturnLinesOfBytesSeparatedByUnixLineBreak_whenUnixLineBreakIsSet() {
         // GIVEN
         String text = "First line.\nSecond line.\nThird line.";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        byte[] bytes = document.getBytes();
+        byte[] bytes = sut.getBytes();
 
         // THEN
         assertThat(bytes, is(equalTo(text.getBytes())));
@@ -720,10 +723,10 @@ public class TextContentTest {
     public void getBytes_shouldReturnLinesOfBytesSeparatedByOldMacLineBreak_whenOldMacLineBreakIsSet() {
         // GIVEN
         String text = "First line.\rSecond line.\rThird line.";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        byte[] bytes = document.getBytes();
+        byte[] bytes = sut.getBytes();
 
         // THEN
         assertThat(bytes, is(equalTo(text.getBytes())));
@@ -733,11 +736,11 @@ public class TextContentTest {
     public void getBytes_shouldReturnLinesOfBytesSeparatedByWindowsLineBreak_whenWasReadAsWindowsAndChangedToUnix() {
         // GIVEN
         String text = "First line.\r\nSecond line.\r\nThird line.";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        document.setLineBreak(UNIX_LINE_BREAK);
-        byte[] bytes = document.getBytes();
+        sut.setLineBreak(UNIX_LINE_BREAK);
+        byte[] bytes = sut.getBytes();
 
         // THEN
         String resultContent = "First line.\nSecond line.\nThird line.";
@@ -748,10 +751,10 @@ public class TextContentTest {
     public void getBytes_shouldReturnLinesOfBytesSeparatedByWindowsLineBreak_whenWindowsLineBreakIsSetAtBeginAndEnd() {
         // GIVEN
         String text = "\r\nFirst line.\r\nSecond line.\r\nThird line.\r\n";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        byte[] bytes = document.getBytes();
+        byte[] bytes = sut.getBytes();
 
         // THEN
         assertThat(bytes, is(equalTo(text.getBytes())));
@@ -761,10 +764,10 @@ public class TextContentTest {
     public void getBytes_shouldReturnLinesOfBytesSeparatedByUnixLineBreak_whenUnixLineBreakIsSetAtBeginAndEnd() {
         // GIVEN
         String text = "\nFirst line.\nSecond line.\nThird line.\n";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        byte[] bytes = document.getBytes();
+        byte[] bytes = sut.getBytes();
 
         // THEN
         assertThat(bytes, is(equalTo(text.getBytes())));
@@ -774,10 +777,10 @@ public class TextContentTest {
     public void getBytes_shouldReturnLinesOfBytesSeparatedByOldMacLineBreak_whenOldMacLineBreakIsSetAtBeginAndEnd() {
         // GIVEN
         String text = "\rFirst line.\rSecond line.\rThird line.\r";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        byte[] bytes = document.getBytes();
+        byte[] bytes = sut.getBytes();
 
         // THEN
         assertThat(bytes, is(equalTo(text.getBytes())));
@@ -787,10 +790,10 @@ public class TextContentTest {
     public void getLineRange_shouldReturnLineRangeOfContent_whenLineRangeInTheMiddleOfTheFile() {
         // GIVEN
         String text = "First line.\nSecond line.\nThird line.";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        LineRange lineRange = document.getLineRange(1, 2);
+        LineRange lineRange = sut.getLineRange(1, 2);
 
         // THEN
         assertThat(lineRange.getLines().size(), is(equalTo(1)));
@@ -803,10 +806,10 @@ public class TextContentTest {
     public void getLineRange_shouldReturnEmptyLineRangeWithIndexesZero_whenContentIsEmpty() {
         // GIVEN
         String content = "";
-        document = new TextContent(content.getBytes());
+        sut = new TextContent(content.getBytes());
 
         // WHEN
-        LineRange lineRange = document.getLineRange(0, 0);
+        LineRange lineRange = sut.getLineRange(0, 0);
 
         // THEN
         assertThat(lineRange.getLines().isEmpty(), is(true));
@@ -818,10 +821,10 @@ public class TextContentTest {
     public void getLineRange_shouldThrowIndexOutOfBoundException_whenStartIndexIsLessThenZero() {
         // GIVEN
         String content = "";
-        document = new TextContent(content.getBytes());
+        sut = new TextContent(content.getBytes());
 
         // WHEN
-        document.getLineRange(-1, 0);
+        sut.getLineRange(-1, 0);
 
         // THEN throw exception
     }
@@ -830,10 +833,10 @@ public class TextContentTest {
     public void getLineRange_shouldThrowIllegalArgumentException_whenEndIndexIsLessThenStartIndex() {
         // GIVEN
         String content = "Something\n";
-        document = new TextContent(content.getBytes());
+        sut = new TextContent(content.getBytes());
 
         // WHEN
-        document.getLineRange(0, -1);
+        sut.getLineRange(0, -1);
 
         // THEN throw exception
     }
@@ -842,10 +845,10 @@ public class TextContentTest {
     public void getLineRange_shouldThrowIndexOutOfBoundException_whenEndIndexIsGreaterThanNumberOfLines() {
         // GIVEN
         String content = "Something\nNextLine";
-        document = new TextContent(content.getBytes());
+        sut = new TextContent(content.getBytes());
 
         // WHEN
-        document.getLineRange(0, 3);
+        sut.getLineRange(0, 3);
 
         // THEN throw exception
     }
@@ -854,10 +857,10 @@ public class TextContentTest {
     public void getLineRange_shouldReturnLineRangeOfTheWholeContent_always() {
         // GIVEN
         String text = "\nFirst line.\nSecond line.\nThird line.\n";
-        document = new TextContent(text.getBytes());
+        sut = new TextContent(text.getBytes());
 
         // WHEN
-        LineRange lineRange = document.getLineRangeAll();
+        LineRange lineRange = sut.getLineRangeAll();
 
         // THEN
         assertThat(lineRange.getLines().size(), is(equalTo(5)));
@@ -868,6 +871,121 @@ public class TextContentTest {
         assertThat(lineRange.getLines().get(2), is(equalTo("Second line.".getBytes())));
         assertThat(lineRange.getLines().get(3), is(equalTo("Third line.".getBytes())));
         assertThat(lineRange.getLines().get(4).length, is(equalTo(0)));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setLineRange_shouldThrowIllegalArgumentException_whenLinesInLineRangeAreNull() {
+        // GIVEN
+        List<byte[]> lines = null;
+        LineRange lineRange = new LineRange(lines, 0, 10);
+
+        // WHEN
+        sut.setLineRange(lineRange);
+
+        // THEN throw exception
+    }
+
+    @Test
+    public void setLineRange_shouldSetTheSelectedLineRange_whenLineRangeBeginsAtTheBeginOfTheContentNoSizeChange() {
+        // GIVEN
+        int originalSize = 10;
+        sut = new TextContent(setupOriginalLines());
+        List<byte[]> lineRangeLines = Stream.of(
+                "Newly created or edited line - first.",
+                "Newly created or edited line - second.",
+                "Newly created or edited line - third.")
+                .map(String::getBytes)
+                .collect(Collectors.toList());
+        LineRange lineRange = new LineRange(lineRangeLines, 0, 3);
+
+        // WHEN
+        sut.setLineRange(lineRange);
+
+        // THEN
+        assertThat(sut.getLines().size(), is(equalTo(originalSize)));
+        assertThat(sut.getLines().get(0), is(equalTo("Newly created or edited line - first.".getBytes())));
+        assertThat(sut.getLines().get(1), is(equalTo("Newly created or edited line - second.".getBytes())));
+        assertThat(sut.getLines().get(2), is(equalTo("Newly created or edited line - third.".getBytes())));
+        assertThat(sut.getLines().get(3), is(equalTo("Forth line.".getBytes())));
+        assertThat(sut.getLines().get(4), is(equalTo("Fifth line.".getBytes())));
+        assertThat(sut.getLines().get(5), is(equalTo("Sixth line.".getBytes())));
+        assertThat(sut.getLines().get(6), is(equalTo("Seventh line".getBytes())));
+        assertThat(sut.getLines().get(7), is(equalTo("Eight line".getBytes())));
+        assertThat(sut.getLines().get(8), is(equalTo("Ninth line.".getBytes())));
+        assertThat(sut.getLines().get(9), is(equalTo("Tenth line.".getBytes())));
+    }
+
+    @Test
+    public void setLineRange_shouldSetTheSelectedLineRange_whenLineRangeBeginsAtTheBeginOfTheContentShrunken() {
+        // GIVEN
+        sut = new TextContent(setupOriginalLines());
+        List<byte[]> lineRangeLines = Stream.of(
+                "Newly created or edited line - first.",
+                "Newly created or edited line - second.")
+                .map(String::getBytes)
+                .collect(Collectors.toList());
+        LineRange lineRange = new LineRange(lineRangeLines, 0, 3);
+
+        // WHEN
+        sut.setLineRange(lineRange);
+
+        // THEN
+        assertThat(sut.getLines().size(), is(equalTo(9)));
+        assertThat(sut.getLines().get(0), is(equalTo("Newly created or edited line - first.".getBytes())));
+        assertThat(sut.getLines().get(1), is(equalTo("Newly created or edited line - second.".getBytes())));
+        assertThat(sut.getLines().get(2), is(equalTo("Forth line.".getBytes())));
+        assertThat(sut.getLines().get(3), is(equalTo("Fifth line.".getBytes())));
+        assertThat(sut.getLines().get(4), is(equalTo("Sixth line.".getBytes())));
+        assertThat(sut.getLines().get(5), is(equalTo("Seventh line".getBytes())));
+        assertThat(sut.getLines().get(6), is(equalTo("Eight line".getBytes())));
+        assertThat(sut.getLines().get(7), is(equalTo("Ninth line.".getBytes())));
+        assertThat(sut.getLines().get(8), is(equalTo("Tenth line.".getBytes())));
+    }
+
+    @Test
+    public void setLineRange_shouldSetTheSelectedLineRange_whenLineRangeBeginsAtTheBeginOfTheContentExpanded() {
+        // GIVEN
+        sut = new TextContent(setupOriginalLines());
+        List<byte[]> lineRangeLines = Stream.of(
+                "Newly created or edited line - first.",
+                "Newly created or edited line - second.",
+                "Newly created or edited line - third.",
+                "Newly created or edited line - forth.")
+                .map(String::getBytes)
+                .collect(Collectors.toList());
+        LineRange lineRange = new LineRange(lineRangeLines, 0, 3);
+
+        // WHEN
+        sut.setLineRange(lineRange);
+
+        // THEN
+        assertThat(sut.getLines().size(), is(equalTo(11)));
+        assertThat(sut.getLines().get(0), is(equalTo("Newly created or edited line - first.".getBytes())));
+        assertThat(sut.getLines().get(1), is(equalTo("Newly created or edited line - second.".getBytes())));
+        assertThat(sut.getLines().get(2), is(equalTo("Newly created or edited line - third.".getBytes())));
+        assertThat(sut.getLines().get(3), is(equalTo("Newly created or edited line - forth.".getBytes())));
+        assertThat(sut.getLines().get(4), is(equalTo("Forth line.".getBytes())));
+        assertThat(sut.getLines().get(5), is(equalTo("Fifth line.".getBytes())));
+        assertThat(sut.getLines().get(6), is(equalTo("Sixth line.".getBytes())));
+        assertThat(sut.getLines().get(7), is(equalTo("Seventh line".getBytes())));
+        assertThat(sut.getLines().get(8), is(equalTo("Eight line".getBytes())));
+        assertThat(sut.getLines().get(9), is(equalTo("Ninth line.".getBytes())));
+        assertThat(sut.getLines().get(10), is(equalTo("Tenth line.".getBytes())));
+    }
+
+    private byte[] setupOriginalLines() {
+        return String.join("\r\n",
+                "First line.",
+                "Second line.",
+                "Third line.",
+                "Forth line.",
+                "Fifth line.",
+                "Sixth line.",
+                "Seventh line",
+                "Eight line",
+                "Ninth line.",
+                "Tenth line.")
+                .getBytes();
     }
 
 }
